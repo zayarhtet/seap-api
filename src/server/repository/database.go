@@ -5,21 +5,19 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+type DataCenter interface {
+	ConnectDatabase()
+}
 
-func ConnectDatabase() {
-	err := godotenv.Load(".env")
+type SeapDataCenter struct {
+	db *gorm.DB
+}
 
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-
+func (d SeapDataCenter) ConnectDatabase() {
 	dbDriver := os.Getenv("DB_DRIVER")
 	dbHost := os.Getenv("DB_HOST")
 	dbUser := os.Getenv("DB_USER")
@@ -30,7 +28,8 @@ func ConnectDatabase() {
 	DB_URL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
 							dbUser, dbPassword, dbHost, dbPort, dbName)
 
-	db, err = gorm.Open(mysql.Open(DB_URL), &gorm.Config{})
+	var err error
+	d.db, err = gorm.Open(mysql.Open(DB_URL), &gorm.Config{})
 
 	if err != nil {
 		fmt.Println("Cannot connect to database ", dbDriver)
