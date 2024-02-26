@@ -4,15 +4,15 @@ import (
 	"time"
 )
 
-type Response[T any] struct {
-	RespondedAt time.Time `json:"respondedAt"`
-	Username    string    `json:"username"`
-	Total       uint      `json:"total"`
-	MaxResults  uint      `json:"maxResults"`
-	StartAt     uint      `json:"startAt"`
-	Data        T         `json:"data"`
+type Response struct {
+	RespondedAt time.Time 	`json:"respondedAt"`
+	Username    string    	`json:"username"`
+	Total       uint      	`json:"total"`
+	Size  		uint      	`json:"size"`
+	StartAt     uint      	`json:"startAt"`
+	Data        any      	`json:"data"`
 }
 
-func NewResponse[T any]() *Response[T] {
-	return &Response[T]{RespondedAt: time.Now()}
+func NewResponse() *Response {
+	return &Response{RespondedAt: time.Now()}
 }

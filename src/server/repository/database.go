@@ -9,15 +9,24 @@ import (
 	"gorm.io/gorm"
 )
 
-type DataCenter interface {
-	ConnectDatabase()
+type dataCenter interface {
+	connectDatabase()
+	getAll(any) *gorm.DB
 }
 
-type SeapDataCenter struct {
+type seapDataCenter struct {
 	db *gorm.DB
 }
 
-func (d SeapDataCenter) ConnectDatabase() {
+var dc dataCenter
+
+func Init() {
+	if dc != nil { return }
+	dc = &seapDataCenter{}
+	dc.connectDatabase()
+}
+
+func (d *seapDataCenter) connectDatabase() {
 	dbDriver := os.Getenv("DB_DRIVER")
 	dbHost := os.Getenv("DB_HOST")
 	dbUser := os.Getenv("DB_USER")
@@ -26,7 +35,7 @@ func (d SeapDataCenter) ConnectDatabase() {
 	dbPort := os.Getenv("DB_PORT")
 
 	DB_URL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-							dbUser, dbPassword, dbHost, dbPort, dbName)
+		dbUser, dbPassword, dbHost, dbPort, dbName)
 
 	var err error
 	d.db, err = gorm.Open(mysql.Open(DB_URL), &gorm.Config{})
@@ -37,4 +46,8 @@ func (d SeapDataCenter) ConnectDatabase() {
 	} else {
 		fmt.Println("We are connected to the database", dbDriver)
 	}
+}
+
+func (d *seapDataCenter) getAll(dest any) *gorm.DB {
+	return d.db.Find(dest)
 }

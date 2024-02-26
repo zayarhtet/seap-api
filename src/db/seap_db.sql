@@ -68,3 +68,35 @@ add column modified_at timestamp on update current_timestamp;
 
 select * from member;
 show tables;
+
+use seap_db;
+insert into credential (password) values ("$2a$10$JviVgZsoGjhFXCNwwWE8EO6wm.dVhCruceCasyKtw/y7UHZkpNhru");
+select * from credential;
+SELECT LAST_INSERT_ID();
+
+select * from member;
+alter table member modify credential_id varchar(255) not null;
+update member set credential_id = "2b8b842f-79c0-4818-b35c-5f18062e7d5f" where username = "chenqingbao";
+insert into credential (credential_id, password)
+values
+("2b8b842f-79c0-4818-b35c-5f18062e7d5f", "$2a$10$JviVgZsoGjhFXCNwwWE8EO6wm.dVhCruceCasyKtw/y7UHZkpNhru");
+
+ALTER TABLE credential MODIFY credential_id varchar(255) NOT NULL;
+
+alter table credential drop primary key;
+
+describe credential;
+
+delete from credential where credential_id = "5";
+
+insert into member (
+first_name, last_name, username, email, credential_id, role_id)
+values
+("Qing Bao", "Chen", "chenqingbao", "chen.qingbao22@gmail.com", 4, 2);
+
+describe member;
+alter table member add constraint fk_member_credential foreign key (credential_id) references credential (credential_id);
+alter table member drop column member_id;
+describe member;
+alter table member add constraint pk_member primary key (username);
+select * from family;
