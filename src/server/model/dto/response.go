@@ -1,18 +1,32 @@
 package dto
 
 import (
-	"time"
+	"github.com/zayarhtet/seap-api/src/server/util"
 )
 
-type Response struct {
-	RespondedAt time.Time 	`json:"respondedAt"`
-	Username    string    	`json:"username"`
-	Total       uint      	`json:"total"`
-	Size  		uint      	`json:"size"`
-	StartAt     uint      	`json:"startAt"`
-	Data        any      	`json:"data"`
+type Response interface{}
+
+type DataResponse struct {
+	RespondedAt string `json:"respondedAt"`
+	Username    string `json:"username"`
+	TotalPage   int    `json:"totalPage"`
+	Page        int    `json:"currentPage"`
+	Total       int64  `json:"totalRow"`
+	Size        uint   `json:"size"`
+	StartAt     uint   `json:"startAt"`
+	Data        any    `json:"data"`
 }
 
-func NewResponse() *Response {
-	return &Response{RespondedAt: time.Now()}
+type ErrorResponse struct {
+	RespondedAt string          `json:"respondedAt"`
+	Username    string          `json:"username"`
+	Error       *map[string]any `json:"error"`
+}
+
+func NewDataResponse(uname string) *DataResponse {
+	return &DataResponse{RespondedAt: util.CurrentTimeString(), Username: uname}
+}
+
+func NewErrorResponse(uname string) *ErrorResponse {
+	return &ErrorResponse{RespondedAt: util.CurrentTimeString(), Username: uname}
 }

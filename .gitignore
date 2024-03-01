@@ -1,3 +1,4 @@
 .env*
 seap-api
 !.env-sample
+.idea/*

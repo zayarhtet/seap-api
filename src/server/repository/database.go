@@ -12,6 +12,9 @@ import (
 type dataCenter interface {
 	connectDatabase()
 	getAll(any) *gorm.DB
+	getAllByPagination(any, int, int) *gorm.DB
+	getRowCount(string, *int64) *gorm.DB
+	getById(any) *gorm.DB
 }
 
 type seapDataCenter struct {
@@ -21,7 +24,9 @@ type seapDataCenter struct {
 var dc dataCenter
 
 func Init() {
-	if dc != nil { return }
+	if dc != nil {
+		return
+	}
 	dc = &seapDataCenter{}
 	dc.connectDatabase()
 }
@@ -50,4 +55,16 @@ func (d *seapDataCenter) connectDatabase() {
 
 func (d *seapDataCenter) getAll(dest any) *gorm.DB {
 	return d.db.Find(dest)
+}
+
+func (d *seapDataCenter) getAllByPagination(dest any, offset, limit int) *gorm.DB {
+	return d.db.Limit(limit).Offset(offset).Find(dest)
+}
+
+func (d *seapDataCenter) getRowCount(tableName string, count *int64) *gorm.DB {
+	return d.db.Table(tableName).Count(count)
+}
+
+func (d *seapDataCenter) getById(dest any) *gorm.DB {
+	return d.db.Where(dest).First(dest)
 }

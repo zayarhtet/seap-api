@@ -1,11 +1,11 @@
 package config
 
 import (
-	"log"
 	"github.com/joho/godotenv"
+	"github.com/zayarhtet/seap-api/src/server/controller"
 	"github.com/zayarhtet/seap-api/src/server/repository"
 	"github.com/zayarhtet/seap-api/src/server/router"
-	"github.com/zayarhtet/seap-api/src/server/controller"
+	"log"
 )
 
 func InitEnv() {

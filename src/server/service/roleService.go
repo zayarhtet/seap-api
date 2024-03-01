@@ -1,35 +1,56 @@
 package service
 
 import (
-	"github.com/zayarhtet/seap-api/src/server/repository"
 	"github.com/zayarhtet/seap-api/src/server/model/dao"
 	"github.com/zayarhtet/seap-api/src/server/model/dto"
-	"github.com/gin-gonic/gin"
+	"github.com/zayarhtet/seap-api/src/server/repository"
 )
 
 type RoleService interface {
-	GetAllRolesResponse(*gin.Context) (*dto.Response,error)
+	GetAllRolesResponse(int, int) (dto.Response, error)
+	GetRoleByIdResponse(uint) (dto.Response, error)
 }
 
 type roleServiceImpl struct {
 	rp repository.RoleRepository
 }
 
-func (rs roleServiceImpl) GetAllRolesResponse(context *gin.Context) (*dto.Response, error) {
-	newResp := dto.NewResponse()
+func (rs roleServiceImpl) GetAllRolesResponse(size int, page int) (dto.Response, error) {
+	var newResp dto.Response
 
+	var total *int64 = rs.rp.GetRowCount()
+	var offset int
+	offset = calculatePagination(*total, int64(size), int64(page))
 	var data *[]dao.Role
-	data, newResp.Total = rs.rp.GetAllRoles()
-	newResp.Data = data
-	newResp.Size = uint(len(*data))
+	if offset == -1 {
+		data = &[]dao.Role{}
+	} else {
+		data = rs.rp.GetAllRoles(offset, size)
+	}
 
-	newResp.Total = 3
-	newResp.StartAt = 0
-	newResp.Username = "HELLO"
+	newResp = BeforeDataResponse[dao.Role](data, *total, size, page)
+
+	if false {
+		newResp = BeforeErrorResponse(PrepareErrorMap(404, "Not Found"))
+	}
+
+	return newResp, nil
+}
+
+func (rs roleServiceImpl) GetRoleByIdResponse(id uint) (dto.Response, error) {
+	var newResp dto.Response
+
+	var role, err = rs.rp.GetRoleById(id)
+	if err != nil {
+		newResp = BeforeErrorResponse(PrepareErrorMap(404, "Not Found"))
+		return newResp, nil
+	}
+	var total int64 = 1
+	newResp = BeforeDataResponse[dao.Role](&[]dao.Role{*role}, total)
 
 	return newResp, nil
 }
 
 func NewRoleService() RoleService {
-	return &roleServiceImpl{rp:  repository.RoleRepositoryImpl{}}
+	return &roleServiceImpl{rp: repository.RoleRepositoryImpl{}}
 }
