@@ -1,23 +1,23 @@
 package dao
 
-import (
-	"golang.org/x/crypto/bcrypt"
-)
+import "github.com/zayarhtet/seap-api/src/server/util"
 
 type Credential struct {
-	credentialId string
-	password     string
+	CredentialId string `gorm:"primary_key"" json:"credentialId"`
+	Password     string `json:"password"`
+}
+
+func NewCredential(pword string) (*Credential, error) {
+	err := util.Encrypt(&pword)
+	if err != nil {
+		return nil, err
+	}
+	return &Credential{
+		CredentialId: util.NewUUID(),
+		Password:     pword,
+	}, nil
 }
 
 func (Credential) TableName() string {
 	return "credential"
-}
-
-func Encrypt(password *string) error {
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
-    if err != nil {
-        return err
-    }
-    *password = string(passwordHash)
-	return nil
 }

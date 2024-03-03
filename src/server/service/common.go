@@ -56,3 +56,9 @@ func calculatePagination(total int64, size, page int64) int {
 
 	return int(start)
 }
+
+func calculateOffset(obj interface{ GetRowCount() *int64 }, size, page int) (*int64, int) {
+	var total *int64 = obj.GetRowCount()
+	var offset int = calculatePagination(*total, int64(size), int64(page))
+	return total, offset
+}

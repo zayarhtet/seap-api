@@ -100,3 +100,17 @@ alter table member drop column member_id;
 describe member;
 alter table member add constraint pk_member primary key (username);
 select * from family;
+use seap_db;
+describe member;
+describe role;
+select * from member;
+insert into member(first_name, last_name, username, email, credential_id, role_id)
+values ("Zayar", "Htet", "admin", "zayarhtet797@gmail.com", "e0f5a784-aa4b-4523-a3bd-b4c01a6ca7e6", 99);
+select * from role;
+insert into role(role_id, name) values (99, "admin");
+delete from `seap_db`.`role` where (`role_id` = 0);
+
+DELETE FROM `seap_db`.`member` WHERE (`username` = 'admin');
+select * from credential;
+select * from member;
+describe member;

@@ -5,10 +5,10 @@ import (
 )
 
 type Role struct {
-	RoleId    uint
-	Name       string
-	CreatedAt  time.Time
-	ModifiedAt time.Time
+	RoleId     uint      `gorm:"primary_key" json:"roleId"`
+	Name       string    `json:"name"`
+	CreatedAt  time.Time `json:"createdAt"`
+	ModifiedAt time.Time `json:"modifiedAt"`
 }
 
 func (Role) TableName() string {

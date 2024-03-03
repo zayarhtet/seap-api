@@ -15,12 +15,14 @@ type roleServiceImpl struct {
 	rp repository.RoleRepository
 }
 
+func (rs roleServiceImpl) GetRowCount() *int64 {
+	return rs.rp.GetRowCount()
+}
+
 func (rs roleServiceImpl) GetAllRolesResponse(size int, page int) (dto.Response, error) {
 	var newResp dto.Response
 
-	var total *int64 = rs.rp.GetRowCount()
-	var offset int
-	offset = calculatePagination(*total, int64(size), int64(page))
+	total, offset := calculateOffset(rs, size, page)
 	var data *[]dao.Role
 	if offset == -1 {
 		data = &[]dao.Role{}

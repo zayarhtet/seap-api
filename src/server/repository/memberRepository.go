@@ -1,9 +1,42 @@
 package repository
 
-type MemberRepository interface {
+import (
+	"github.com/zayarhtet/seap-api/src/server/model/dao"
+)
 
+type MemberRepository interface {
+	GetAllMembers(int, int) *[]dao.Member
+	GetRowCount() *int64
+	SaveMember(*dao.Member) (*dao.Member, error)
 }
 
-type MemberRepositoryImpl struct {
-	
+type MemberRepositoryImpl struct{}
+
+func (m MemberRepositoryImpl) GetAllMembers(offset, limit int) *[]dao.Member {
+	var members []dao.Member
+	dc.getAllByPagination(&members, offset, limit, &dao.Member{}, "Role")
+	return &members
+}
+
+func (m MemberRepositoryImpl) GetRowCount() *int64 {
+	var count int64
+	dc.getRowCount("member", &count)
+	return &count
+}
+
+func (m MemberRepositoryImpl) SaveMember(member *dao.Member) (*dao.Member, error) {
+	err := dc.insertOne(member).Error
+
+	if err != nil {
+		return nil, err
+	}
+	var insertedMember dao.Member = dao.Member{
+		Username: member.Username,
+	}
+	err = dc.getById(&insertedMember, &dao.Member{}, "Role").Error
+
+	if err != nil {
+		return nil, err
+	}
+	return &insertedMember, nil
 }

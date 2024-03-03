@@ -12,9 +12,11 @@ import (
 type dataCenter interface {
 	connectDatabase()
 	getAll(any) *gorm.DB
-	getAllByPagination(any, int, int) *gorm.DB
+	getAllByPagination(any, int, int, any, ...string) *gorm.DB
 	getRowCount(string, *int64) *gorm.DB
-	getById(any) *gorm.DB
+	getById(any, any, ...string) *gorm.DB
+	insertOne(any) *gorm.DB
+	deleteOneById(any) *gorm.DB
 }
 
 type seapDataCenter struct {
@@ -55,16 +57,33 @@ func (d *seapDataCenter) connectDatabase() {
 
 func (d *seapDataCenter) getAll(dest any) *gorm.DB {
 	return d.db.Find(dest)
+	//return d.db.Model(&dao.Member{}).Preload("Role").Find(dest)
 }
 
-func (d *seapDataCenter) getAllByPagination(dest any, offset, limit int) *gorm.DB {
-	return d.db.Limit(limit).Offset(offset).Find(dest)
+func (d *seapDataCenter) getAllByPagination(dest any, offset, limit int, model any, preloads ...string) *gorm.DB {
+	preloadedDb := d.db
+	for _, s := range preloads {
+		preloadedDb = preloadedDb.Preload(s)
+	}
+	return preloadedDb.Model(model).Limit(limit).Offset(offset).Find(dest)
 }
 
 func (d *seapDataCenter) getRowCount(tableName string, count *int64) *gorm.DB {
 	return d.db.Table(tableName).Count(count)
 }
 
-func (d *seapDataCenter) getById(dest any) *gorm.DB {
-	return d.db.Where(dest).First(dest)
+func (d *seapDataCenter) getById(dest any, model any, preloads ...string) *gorm.DB {
+	preloadedDb := d.db
+	for _, s := range preloads {
+		preloadedDb = preloadedDb.Preload(s)
+	}
+	return preloadedDb.Model(model).Where(dest).First(dest)
+}
+
+func (d *seapDataCenter) insertOne(dest any) *gorm.DB {
+	return d.db.Create(dest)
+}
+
+func (d *seapDataCenter) deleteOneById(dest any) *gorm.DB {
+	return d.db.Delete(dest)
 }

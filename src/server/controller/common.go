@@ -3,11 +3,20 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/zayarhtet/seap-api/src/server/config/constant"
+	"net/http"
 	"strconv"
 )
 
 func Init() {
+	initAuth()
 	initRole()
+	initMember()
+}
+
+func Welcome() func(context *gin.Context) {
+	return func(context *gin.Context) {
+		context.JSON(http.StatusOK, "Mingalar Br Mate Sway")
+	}
 }
 
 func paginated(context *gin.Context) (int, int) {
