@@ -1,9 +1,10 @@
 package util
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 func CurrentTimeString() string {
@@ -17,6 +18,10 @@ func Encrypt(password *string) error {
 	}
 	*password = string(passwordHash)
 	return nil
+}
+
+func ValidatePassword(password, existedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(existedPassword), []byte(password))
 }
 
 func NewUUID() string {

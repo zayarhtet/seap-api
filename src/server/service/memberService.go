@@ -1,13 +1,16 @@
 package service
 
 import (
+	"github.com/zayarhtet/seap-api/src/server/auth"
 	"github.com/zayarhtet/seap-api/src/server/model/dao"
 	"github.com/zayarhtet/seap-api/src/server/model/dto"
 	"github.com/zayarhtet/seap-api/src/server/repository"
+	"github.com/zayarhtet/seap-api/src/server/util"
 )
 
 type MemberService interface {
-	SignUp(request dto.SignUpRequest) (dto.Response, error)
+	SignUp(dto.SignUpRequest) (dto.Response, error)
+	Login(dto.LoginRequest) (dto.Response, error)
 	GetAllMembersResponse(int, int) (dto.Response, error)
 }
 
@@ -46,9 +49,37 @@ func (ms memberServiceImpl) SignUp(request dto.SignUpRequest) (dto.Response, err
 	member, err = ms.mr.SaveMember(member)
 	if err != nil {
 		ms.cr.DeleteCredential(credentialId)
-		return BeforeErrorResponse(PrepareErrorMap(409, err.Error())), err
+		return BeforeErrorResponse(PrepareErrorMap(409, "Username or Email already exists.")), err
 	}
 	newResp := BeforeDataResponse[dao.Member](&[]dao.Member{*member}, 1)
+
+	return newResp, nil
+}
+
+func (ms memberServiceImpl) Login(request dto.LoginRequest) (dto.Response, error) {
+	var newResp dto.Response
+	var err error
+	var user *dao.Member = &dao.Member{
+		Username: request.Username,
+	}
+	err = ms.mr.GetMemberByUsername(user)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(404, "Username does not exist.")), err
+	}
+	var credential *dao.Credential = &dao.Credential{
+		CredentialId: user.CredentialId,
+	}
+	err = ms.cr.GetCredentialById(credential)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(400, "Password is incorrect.")), err
+	}
+
+	err = util.ValidatePassword(request.Password, credential.Password)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(400, "Password is incorrect.")), err
+	}
+
+	newResp = auth.GenerateToken(user.Username, user.Role.Name)
 
 	return newResp, nil
 }

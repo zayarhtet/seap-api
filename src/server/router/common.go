@@ -1,8 +1,9 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 var seapRouter *gin.Engine
@@ -15,6 +16,7 @@ func Init() {
 		context.JSON(http.StatusNotFound, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})
 	publicRoutes()
-	protectedRoutes()
+	adminRoutes()
+	individualRoutes()
 	seapRouter.Run(":8000")
 }

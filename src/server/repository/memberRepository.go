@@ -8,6 +8,7 @@ type MemberRepository interface {
 	GetAllMembers(int, int) *[]dao.Member
 	GetRowCount() *int64
 	SaveMember(*dao.Member) (*dao.Member, error)
+	GetMemberByUsername(*dao.Member) error
 }
 
 type MemberRepositoryImpl struct{}
@@ -30,13 +31,13 @@ func (m MemberRepositoryImpl) SaveMember(member *dao.Member) (*dao.Member, error
 	if err != nil {
 		return nil, err
 	}
-	var insertedMember dao.Member = dao.Member{
+	member = &dao.Member{
 		Username: member.Username,
 	}
-	err = dc.getById(&insertedMember, &dao.Member{}, "Role").Error
+	err = m.GetMemberByUsername(member)
+	return member, err
+}
 
-	if err != nil {
-		return nil, err
-	}
-	return &insertedMember, nil
+func (m MemberRepositoryImpl) GetMemberByUsername(member *dao.Member) error {
+	return dc.getById(member, &dao.Member{}, "Role").Error
 }

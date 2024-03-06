@@ -1,21 +1,29 @@
 package router
 
 import (
-	"github.com/zayarhtet/seap-api/src/server/auth"
 	"github.com/zayarhtet/seap-api/src/server/controller"
 )
 
 func publicRoutes() {
 	public := seapRouter.Group("/")
 	public.GET("/", controller.Welcome())
-	auth := seapRouter.Group("/api/auth")
-	auth.POST("/register", controller.Register())
+
+	authed := seapRouter.Group("/api/auth")
+	authed.POST("/register", controller.Register())
+	authed.POST("/login", controller.Login())
 }
 
-func protectedRoutes() {
-	protected := seapRouter.Group("/api")
-	protected.Use(auth.JwtAuthMiddleware())
-	protected.GET("/roles", controller.GetAllRoles())
-	protected.GET("/role/:id", controller.GetRoleById())
-	protected.GET("members", controller.GetAllMembers())
+func adminRoutes() {
+	admin := seapRouter.Group("/api/admin/")
+	admin.Use(controller.AdminMiddleware())
+	admin.GET("/roles", controller.GetAllRoles())
+	admin.GET("/members", controller.GetAllMembers())
+	admin.GET("/role/:id", controller.GetRoleById())
+}
+
+func individualRoutes() {
+	protected := seapRouter.Group("/api/my/")
+	protected.Use(controller.IndividualMiddleware())
+	protected.GET("/role", controller.Welcome())
+	protected.GET("/member", controller.Welcome())
 }
