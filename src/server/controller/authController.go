@@ -1,10 +1,14 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 
+	"github.com/zayarhtet/seap-api/src/server/auth"
 	"github.com/zayarhtet/seap-api/src/server/model/dto"
 	"github.com/zayarhtet/seap-api/src/server/service"
 )
@@ -62,25 +66,68 @@ func (a *authControllerImpl) loginResp(context *gin.Context) {
 	context.JSON(http.StatusOK, loggedUser)
 }
 
+func getTokenFromRequest(context *gin.Context) string {
+	bearerToken := context.Request.Header.Get("Authorization")
+	splitToken := strings.Split(bearerToken, " ")
+	if len(splitToken) == 2 {
+		return splitToken[1]
+	}
+	return ""
+}
+
+func validateTokenAndClaims(context *gin.Context) (string, string, error) {
+	tokenString := getTokenFromRequest(context)
+	if len(tokenString) == 0 {
+		return "", "", errors.New("no valid authentication token")
+	}
+	claims, err := auth.ValidateToken(tokenString)
+	if err != nil {
+		return "", "", err
+	}
+	return claims["id"].(string), claims["role"].(string), nil
+}
+
+func parseErrorAndResponse(err error) (int, dto.Response) {
+	if errors.Is(err, jwt.ErrTokenMalformed) {
+		return http.StatusUnauthorized, service.PrepareErrorMap(http.StatusUnauthorized, "Invalid token")
+	} else if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {
+		return http.StatusUnauthorized, service.PrepareErrorMap(419, "Expired Token")
+	} else {
+		return http.StatusUnauthorized, service.PrepareErrorMap(http.StatusUnauthorized, "Invalid token")
+	}
+}
+
 func (a *authControllerImpl) adminMiddleware(context *gin.Context) {
-	// validate token
-	context.Set("username", "miyuki")
-	if false {
+	username, role, err := validateTokenAndClaims(context)
+	if err != nil {
+		context.JSON(parseErrorAndResponse(err))
+		context.Abort()
+		return
+	}
+	if role != "admin" {
 		context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "Unauthorized access")))
 		context.Abort()
 		return
 	}
+	context.Set("username", username)
+	context.Set("role", role)
 	context.Next()
 }
 
 func (a *authControllerImpl) individualMiddleware(context *gin.Context) {
-	// validate token
-	context.Set("username", "admin")
-	if false {
+	username, role, err := validateTokenAndClaims(context)
+	if err != nil {
+		context.JSON(parseErrorAndResponse(err))
+		context.Abort()
+		return
+	}
+	if role != "tutor" && role != "tutee" {
 		context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "Unauthorized access")))
 		context.Abort()
 		return
 	}
+	context.Set("username", username)
+	context.Set("role", role)
 	context.Next()
 }
 

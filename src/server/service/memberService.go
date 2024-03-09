@@ -12,6 +12,8 @@ type MemberService interface {
 	SignUp(dto.SignUpRequest) (dto.Response, error)
 	Login(dto.LoginRequest) (dto.Response, error)
 	GetAllMembersResponse(int, int) (dto.Response, error)
+	GetMemberByIdResponse(string) (dto.Response, error)
+	DeleteMemberResponse(string) (dto.Response, error)
 }
 
 type memberServiceImpl struct {
@@ -29,13 +31,13 @@ func (ms memberServiceImpl) SignUp(request dto.SignUpRequest) (dto.Response, err
 	credential, err = dao.NewCredential(request.Password)
 
 	if err != nil {
-		return dto.NewErrorResponse("hello"), err
+		return BeforeErrorResponse(PrepareErrorMap(400, "Password has an incorrect format.")), err
 	}
 
 	var credentialId string
 	credentialId, err = ms.cr.SaveCredential(credential)
 	if err != nil {
-		return dto.NewErrorResponse("hello"), err
+		return BeforeErrorResponse(PrepareErrorMap(500, "Password cannot be saved.")), err
 	}
 
 	member := &dao.Member{
@@ -57,7 +59,6 @@ func (ms memberServiceImpl) SignUp(request dto.SignUpRequest) (dto.Response, err
 }
 
 func (ms memberServiceImpl) Login(request dto.LoginRequest) (dto.Response, error) {
-	var newResp dto.Response
 	var err error
 	var user *dao.Member = &dao.Member{
 		Username: request.Username,
@@ -79,9 +80,13 @@ func (ms memberServiceImpl) Login(request dto.LoginRequest) (dto.Response, error
 		return BeforeErrorResponse(PrepareErrorMap(400, "Password is incorrect.")), err
 	}
 
-	newResp = auth.GenerateToken(user.Username, user.Role.Name)
+	var resp dto.LoginResponse = dto.LoginResponse{
+		Username: user.Username,
+		Role:     user.Role.Name,
+	}
+	resp.Token, err = auth.GenerateToken(user.Username, user.Role.Name)
 
-	return newResp, nil
+	return resp, nil
 }
 
 func (ms memberServiceImpl) GetAllMembersResponse(size, page int) (dto.Response, error) {
@@ -99,6 +104,31 @@ func (ms memberServiceImpl) GetAllMembersResponse(size, page int) (dto.Response,
 	newResp = BeforeDataResponse[dao.Member](data, *total, size, page)
 
 	return newResp, nil
+}
+
+func (ms memberServiceImpl) GetMemberByIdResponse(id string) (dto.Response, error) {
+	var member *dao.Member = &dao.Member{
+		Username: id,
+	}
+	err := ms.mr.GetMemberByUsername(member)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(404, "Username does not exist.")), err
+	}
+
+	newResp := BeforeDataResponse[dao.Member](&[]dao.Member{*member}, 1)
+	return newResp, nil
+}
+
+func (ms memberServiceImpl) DeleteMemberResponse(username string) (dto.Response, error) {
+	var data *dao.Member = &dao.Member{Username: username}
+
+	credentialId, err := ms.mr.DeleteMember(data)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(404, "Username does not exist.")), err
+	}
+
+	err = ms.cr.DeleteCredential(credentialId)
+	return PrepareErrorMap(200, username+" has been deleted."), err
 }
 
 func NewMemberService() MemberService {

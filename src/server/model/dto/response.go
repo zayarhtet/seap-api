@@ -8,7 +8,6 @@ type Response interface{}
 
 type DataResponse struct {
 	RespondedAt string `json:"respondedAt"`
-	Username    string `json:"username"`
 	TotalPage   int    `json:"totalPage"`
 	Page        int    `json:"currentPage"`
 	Total       int64  `json:"totalRow"`
@@ -19,14 +18,13 @@ type DataResponse struct {
 
 type ErrorResponse struct {
 	RespondedAt string          `json:"respondedAt"`
-	Username    string          `json:"username"`
 	Error       *map[string]any `json:"error"`
 }
 
-func NewDataResponse(uname string) *DataResponse {
-	return &DataResponse{RespondedAt: util.CurrentTimeString(), Username: uname}
+func NewDataResponse() *DataResponse {
+	return &DataResponse{RespondedAt: util.CurrentTimeString()}
 }
 
-func NewErrorResponse(uname string) *ErrorResponse {
-	return &ErrorResponse{RespondedAt: util.CurrentTimeString(), Username: uname}
+func NewErrorResponse() *ErrorResponse {
+	return &ErrorResponse{RespondedAt: util.CurrentTimeString()}
 }

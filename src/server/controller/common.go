@@ -1,16 +1,19 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/zayarhtet/seap-api/src/server/config/constant"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/zayarhtet/seap-api/src/server/config/constant"
 )
 
 func Init() {
 	initAuth()
 	initRole()
 	initMember()
+	initIndividual()
 }
 
 func Welcome() func(context *gin.Context) {

@@ -9,10 +9,12 @@ import (
 type RoleService interface {
 	GetAllRolesResponse(int, int) (dto.Response, error)
 	GetRoleByIdResponse(uint) (dto.Response, error)
+	GetRoleByMemberResponse(string) (dto.Response, error)
 }
 
 type roleServiceImpl struct {
 	rp repository.RoleRepository
+	mr repository.MemberRepository
 }
 
 func (rs roleServiceImpl) GetRowCount() *int64 {
@@ -53,6 +55,18 @@ func (rs roleServiceImpl) GetRoleByIdResponse(id uint) (dto.Response, error) {
 	return newResp, nil
 }
 
+func (rs roleServiceImpl) GetRoleByMemberResponse(username string) (dto.Response, error) {
+	var member *dao.Member = &dao.Member{
+		Username: username,
+	}
+	err := rs.mr.GetMemberByUsername(member)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(404, "Username does not exist.")), err
+	}
+	newResp := BeforeDataResponse[dto.RoleDto](&[]dto.RoleDto{member.Role}, 1)
+	return newResp, nil
+}
+
 func NewRoleService() RoleService {
-	return &roleServiceImpl{rp: repository.RoleRepositoryImpl{}}
+	return &roleServiceImpl{rp: repository.RoleRepositoryImpl{}, mr: repository.MemberRepositoryImpl{}}
 }

@@ -5,7 +5,7 @@ import (
 )
 
 func BeforeDataResponse[T any](data *[]T, total int64, args ...int) dto.Response {
-	newDataResp := dto.NewDataResponse("mg wade")
+	newDataResp := dto.NewDataResponse()
 
 	newDataResp.Data = data
 	newDataResp.Size = uint(len(*data))
@@ -30,7 +30,7 @@ func BeforeDataResponse[T any](data *[]T, total int64, args ...int) dto.Response
 }
 
 func BeforeErrorResponse(err *map[string]any) dto.Response {
-	newErrorResp := dto.NewErrorResponse("Mg wade")
+	newErrorResp := dto.NewErrorResponse()
 	newErrorResp.Error = err
 
 	return &newErrorResp

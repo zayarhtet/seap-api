@@ -9,6 +9,7 @@ type MemberRepository interface {
 	GetRowCount() *int64
 	SaveMember(*dao.Member) (*dao.Member, error)
 	GetMemberByUsername(*dao.Member) error
+	DeleteMember(*dao.Member) (string, error)
 }
 
 type MemberRepositoryImpl struct{}
@@ -40,4 +41,17 @@ func (m MemberRepositoryImpl) SaveMember(member *dao.Member) (*dao.Member, error
 
 func (m MemberRepositoryImpl) GetMemberByUsername(member *dao.Member) error {
 	return dc.getById(member, &dao.Member{}, "Role").Error
+}
+
+func (m MemberRepositoryImpl) DeleteMember(member *dao.Member) (string, error) {
+	err := dc.getById(member, &dao.Member{}).Error
+	if err != nil {
+		return "", err
+	}
+	credentialId := member.CredentialId
+	err = dc.deleteOneById(member).Error
+	if err != nil {
+		return "", err
+	}
+	return credentialId, nil
 }

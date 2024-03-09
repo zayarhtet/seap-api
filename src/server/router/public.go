@@ -17,13 +17,15 @@ func adminRoutes() {
 	admin := seapRouter.Group("/api/admin/")
 	admin.Use(controller.AdminMiddleware())
 	admin.GET("/roles", controller.GetAllRoles())
-	admin.GET("/members", controller.GetAllMembers())
 	admin.GET("/role/:id", controller.GetRoleById())
+	admin.GET("/members", controller.GetAllMembers())
+	admin.DELETE("member/:id", controller.DeleteMember())
+	admin.GET("member/:id", controller.GetMemberById())
 }
 
 func individualRoutes() {
 	protected := seapRouter.Group("/api/my/")
 	protected.Use(controller.IndividualMiddleware())
-	protected.GET("/role", controller.Welcome())
-	protected.GET("/member", controller.Welcome())
+	protected.GET("/role", controller.GetMyRole())
+	protected.GET("/member", controller.GetMyMember())
 }
