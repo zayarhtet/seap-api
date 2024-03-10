@@ -6,6 +6,7 @@ import (
 
 type MemberRepository interface {
 	GetAllMembers(int, int) *[]dao.Member
+	GetAllMembersWithFamilies(int, int) *[]dao.MemberWithFamilies
 	GetRowCount() *int64
 	SaveMember(*dao.Member) (*dao.Member, error)
 	GetMemberByUsername(*dao.Member) error
@@ -17,6 +18,12 @@ type MemberRepositoryImpl struct{}
 func (m MemberRepositoryImpl) GetAllMembers(offset, limit int) *[]dao.Member {
 	var members []dao.Member
 	dc.getAllByPagination(&members, offset, limit, &dao.Member{}, "Role")
+	return &members
+}
+
+func (m MemberRepositoryImpl) GetAllMembersWithFamilies(offset, limit int) *[]dao.MemberWithFamilies {
+	var members []dao.MemberWithFamilies
+	dc.getAllByPagination(&members, offset, limit, &dao.Member{}, "Families.Family", "Families.MemberRole", "Families")
 	return &members
 }
 

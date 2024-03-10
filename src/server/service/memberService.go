@@ -12,6 +12,7 @@ type MemberService interface {
 	SignUp(dto.SignUpRequest) (dto.Response, error)
 	Login(dto.LoginRequest) (dto.Response, error)
 	GetAllMembersResponse(int, int) (dto.Response, error)
+	GetAllMembersWithFamiliesResponse(int, int) (dto.Response, error)
 	GetMemberByIdResponse(string) (dto.Response, error)
 	DeleteMemberResponse(string) (dto.Response, error)
 }
@@ -102,6 +103,23 @@ func (ms memberServiceImpl) GetAllMembersResponse(size, page int) (dto.Response,
 	}
 
 	newResp = BeforeDataResponse[dao.Member](data, *total, size, page)
+
+	return newResp, nil
+}
+
+func (ms memberServiceImpl) GetAllMembersWithFamiliesResponse(size, page int) (dto.Response, error) {
+	var newResp dto.Response
+
+	total, offset := calculateOffset(ms, size, page)
+
+	var data *[]dao.MemberWithFamilies
+	if offset == -1 {
+		data = &[]dao.MemberWithFamilies{}
+	} else {
+		data = ms.mr.GetAllMembersWithFamilies(offset, size)
+	}
+
+	newResp = BeforeDataResponse[dao.MemberWithFamilies](data, *total, size, page)
 
 	return newResp, nil
 }

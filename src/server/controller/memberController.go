@@ -10,6 +10,7 @@ import (
 
 type MemberController interface {
 	getAllMembers(*gin.Context)
+	getAllMembersWithFamilies(*gin.Context)
 	deleteMember(*gin.Context)
 	getMemberById(*gin.Context)
 }
@@ -30,6 +31,16 @@ func initMember() {
 func (mc *memberControllerImpl) getAllMembers(context *gin.Context) {
 	size, page := paginated(context)
 	response, err := mc.ms.GetAllMembersResponse(size, page)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, response)
+}
+
+func (mc *memberControllerImpl) getAllMembersWithFamilies(context *gin.Context) {
+	size, page := paginated(context)
+	response, err := mc.ms.GetAllMembersWithFamiliesResponse(size, page)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -59,6 +70,10 @@ func (mc *memberControllerImpl) deleteMember(context *gin.Context) {
 
 func GetAllMembers() func(*gin.Context) {
 	return memberControllerObj.getAllMembers
+}
+
+func GetAllMembersWithFamilies() func(*gin.Context) {
+	return memberControllerObj.getAllMembersWithFamilies
 }
 
 func GetMemberById() func(*gin.Context) {

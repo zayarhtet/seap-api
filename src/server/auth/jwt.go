@@ -20,7 +20,6 @@ func GenerateToken(username, role string) (string, error) {
 		"iat":  time.Now().Unix(),
 		"exp":  time.Now().Add(time.Second * time.Duration(tokenTTL)).Unix(),
 	})
-	fmt.Println(time.Now().Add(time.Second * time.Duration(tokenTTL)).Unix())
 	return token.SignedString(privateKey)
 }
 
@@ -45,6 +44,5 @@ func getToken(tokenString string) (*jwt.Token, error) {
 
 		return privateKey, nil
 	})
-	fmt.Println(err)
 	return token, err
 }
