@@ -14,6 +14,7 @@ func Init() {
 	initRole()
 	initMember()
 	initIndividual()
+	initFamily()
 }
 
 func Welcome() func(context *gin.Context) {

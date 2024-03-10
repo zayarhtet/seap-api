@@ -76,6 +76,7 @@ SELECT LAST_INSERT_ID();
 
 select * from member;
 alter table member modify credential_id varchar(255) not null;
+alter table family modify family_id varchar(255) not null;
 update member set credential_id = "2b8b842f-79c0-4818-b35c-5f18062e7d5f" where username = "chenqingbao";
 insert into credential (credential_id, password)
 values
@@ -114,3 +115,59 @@ DELETE FROM `seap_db`.`member` WHERE (`username` = 'admin');
 select * from credential;
 select * from member;
 describe member;
+
+show tables;
+select * from family;
+describe family;
+
+create table family_member (
+	username varchar(255) not null,
+    family_id varchar(255) not null,
+    role_id int not null,
+    primary key (username, family_id),
+	CONSTRAINT FK_familymember_member FOREIGN KEY (username)
+    REFERENCES member(username),
+	CONSTRAINT FK_familymember_family FOREIGN KEY (family_id)
+    REFERENCES family(family_id),
+    constraint FK_familymember_role foreign key (role_id)
+    references role(role_id)
+);
+
+select * from family_member;
+select * from member;
+select * from family; describe family;
+insert into family(family_id, family_name, family_info, family_icon)
+values ("9dc1b896-4384-4cc8-bbcc-aaa773067153", "Object-oriented Programming", "23/24/2 Group 1", "/fp.png");
+
+insert into family_member(username, family_id, role_id) values
+("HELLO1", "803360bc-71f4-4b10-a119-ed93de707650", 2);
+
+insert into family_member(username, family_id, role_id) values
+("miyuki", "803360bc-71f4-4b10-a119-ed93de707650", 1);
+
+insert into family_member(username, family_id, role_id) values
+("HELLO2", "803360bc-71f4-4b10-a119-ed93de707650", 2);
+
+insert into family_member(username, family_id, role_id) values
+("HELLO3", "9dc1b896-4384-4cc8-bbcc-aaa773067153", 2);
+
+insert into family_member(username, family_id, role_id) values
+("HELLO4", "9dc1b896-4384-4cc8-bbcc-aaa773067153", 2);
+
+insert into family_member(username, family_id, role_id) values
+("chenqingbao", "9dc1b896-4384-4cc8-bbcc-aaa773067153", 1);
+
+insert into family_member(username, family_id, role_id) values
+("miyuki", "ff716cbb-501f-471b-b84c-fdc1b6cd6f16", 2);
+insert into family_member(username, family_id, role_id) values
+("chenqingbao", "ff716cbb-501f-471b-b84c-fdc1b6cd6f16", 1);
+insert into family_member(username, family_id, role_id) values
+("HELLO3", "ff716cbb-501f-471b-b84c-fdc1b6cd6f16", 1);
+
+alter table family_member
+add column created_at timestamp default current_timestamp;
+alter table family_member
+add column modified_at timestamp on update current_timestamp;
+
+
+

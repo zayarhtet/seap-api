@@ -19,8 +19,11 @@ func adminRoutes() {
 	admin.GET("/roles", controller.GetAllRoles())
 	admin.GET("/role/:id", controller.GetRoleById())
 	admin.GET("/members", controller.GetAllMembers())
-	admin.DELETE("member/:id", controller.DeleteMember())
+	admin.GET("/members/families", controller.GetAllMembersWithFamilies())
 	admin.GET("member/:id", controller.GetMemberById())
+	admin.DELETE("member/:id", controller.DeleteMember())
+	admin.GET("families", controller.GetAllFamilies())
+	admin.GET("families/members", controller.GetAllFamiliesWithMembers())
 }
 
 func individualRoutes() {
