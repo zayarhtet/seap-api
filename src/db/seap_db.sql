@@ -126,9 +126,9 @@ create table family_member (
     role_id int not null,
     primary key (username, family_id),
 	CONSTRAINT FK_familymember_member FOREIGN KEY (username)
-    REFERENCES member(username),
+    REFERENCES member(username) on delete cascade,
 	CONSTRAINT FK_familymember_family FOREIGN KEY (family_id)
-    REFERENCES family(family_id),
+    REFERENCES family(family_id) on delete cascade,
     constraint FK_familymember_role foreign key (role_id)
     references role(role_id)
 );
@@ -168,6 +168,20 @@ alter table family_member
 add column created_at timestamp default current_timestamp;
 alter table family_member
 add column modified_at timestamp on update current_timestamp;
+select * from family_member;
+ALTER TABLE family_member
+  DROP FOREIGN KEY FK_familymember_family;
+  
+select * from family_member;
+select * from member;
+delete from member where username = 'HELLO3';
+delete from family_member where username = 'HELLO3';
+alter table family_member add constraint FK_familymember_family foreign key (family_id) references family (family_id) on delete cascade;
 
+SELECT *
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+WHERE TABLE_NAME = 'family_member';
 
+use seap_db;
+describe credential;
 

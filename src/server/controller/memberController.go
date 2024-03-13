@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/zayarhtet/seap-api/src/server/service"
@@ -29,43 +27,22 @@ func initMember() {
 }
 
 func (mc *memberControllerImpl) getAllMembers(context *gin.Context) {
-	size, page := paginated(context)
-	response, err := mc.ms.GetAllMembersResponse(size, page)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	context.JSON(http.StatusOK, response)
+	getPaginatedResponseByCallBack(context, mc.ms.GetAllMembersResponse)
 }
 
 func (mc *memberControllerImpl) getAllMembersWithFamilies(context *gin.Context) {
-	size, page := paginated(context)
-	response, err := mc.ms.GetAllMembersWithFamiliesResponse(size, page)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	context.JSON(http.StatusOK, response)
+	getPaginatedResponseByCallBack(context, mc.ms.GetAllMembersWithFamiliesResponse)
 }
 
 func (mc *memberControllerImpl) getMemberById(context *gin.Context) {
 	idRaw := context.Param("id")
-	resp, err := mc.ms.GetMemberByIdResponse(idRaw)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, err.Error())))
-		return
-	}
-	context.JSON(http.StatusOK, resp)
+	getOneResponseByCallBack(context, idRaw, mc.ms.GetMemberByIdResponse)
 }
 
 func (mc *memberControllerImpl) deleteMember(context *gin.Context) {
 	idRaw := context.Param("id")
-	resp, err := mc.ms.DeleteMemberResponse(idRaw)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, err.Error())))
-		return
-	}
-	context.JSON(http.StatusOK, resp)
+	getOneResponseByCallBack(context, idRaw, mc.ms.DeleteMemberResponse)
+
 }
 
 func GetAllMembers() func(*gin.Context) {

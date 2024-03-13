@@ -18,5 +18,6 @@ func Init() {
 	publicRoutes()
 	adminRoutes()
 	individualRoutes()
+	tutorRoutes()
 	seapRouter.Run(":8000")
 }

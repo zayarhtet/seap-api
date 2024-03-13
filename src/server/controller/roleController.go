@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/zayarhtet/seap-api/src/server/service"
 )
 
@@ -28,18 +29,7 @@ func initRole() {
 }
 
 func (rc *roleControllerImpl) getAllRoles(context *gin.Context) {
-	size, page := paginated(context)
-	response, err := rc.rs.GetAllRolesResponse(size, page)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	context.JSON(http.StatusOK, response)
-}
-
-func GetAllRoles() func(*gin.Context) {
-	return roleControllerObj.getAllRoles
+	getPaginatedResponseByCallBack(context, rc.rs.GetAllRolesResponse)
 }
 
 func (rc *roleControllerImpl) getRoleById(context *gin.Context) {
@@ -52,6 +42,10 @@ func (rc *roleControllerImpl) getRoleById(context *gin.Context) {
 	response, err := rc.rs.GetRoleByIdResponse(id)
 
 	context.JSON(http.StatusOK, response)
+}
+
+func GetAllRoles() func(*gin.Context) {
+	return roleControllerObj.getAllRoles
 }
 
 func GetRoleById() func(*gin.Context) {
