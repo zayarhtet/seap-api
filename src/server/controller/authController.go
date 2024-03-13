@@ -18,6 +18,7 @@ type AuthController interface {
 	loginResp(*gin.Context)
 	adminMiddleware(*gin.Context)
 	individualMiddleware(*gin.Context)
+	tutorMiddleware(*gin.Context)
 }
 
 type authControllerImpl struct {
@@ -97,38 +98,35 @@ func parseErrorAndResponse(err error) (int, dto.Response) {
 	}
 }
 
-func (a *authControllerImpl) adminMiddleware(context *gin.Context) {
+func authorizeByRole(context *gin.Context, roles []string) {
 	username, role, err := validateTokenAndClaims(context)
 	if err != nil {
 		context.JSON(parseErrorAndResponse(err))
 		context.Abort()
 		return
 	}
-	if role != "admin" {
-		context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "Unauthorized access")))
-		context.Abort()
-		return
+	for _, s := range roles {
+		if s == role {
+			context.Set("username", username)
+			context.Set("role", role)
+			context.Next()
+			return
+		}
 	}
-	context.Set("username", username)
-	context.Set("role", role)
-	context.Next()
+	context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "Unauthorized access")))
+	context.Abort()
+}
+
+func (a *authControllerImpl) adminMiddleware(context *gin.Context) {
+	authorizeByRole(context, []string{"admin"})
 }
 
 func (a *authControllerImpl) individualMiddleware(context *gin.Context) {
-	username, role, err := validateTokenAndClaims(context)
-	if err != nil {
-		context.JSON(parseErrorAndResponse(err))
-		context.Abort()
-		return
-	}
-	if role != "tutor" && role != "tutee" {
-		context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "Unauthorized access")))
-		context.Abort()
-		return
-	}
-	context.Set("username", username)
-	context.Set("role", role)
-	context.Next()
+	authorizeByRole(context, []string{"tutor", "tutee"})
+}
+
+func (a *authControllerImpl) tutorMiddleware(context *gin.Context) {
+	authorizeByRole(context, []string{"admin", "tutor"})
 }
 
 func Register() func(*gin.Context) {
@@ -145,4 +143,8 @@ func AdminMiddleware() gin.HandlerFunc {
 
 func IndividualMiddleware() gin.HandlerFunc {
 	return authControllerObj.individualMiddleware
+}
+
+func TutorMiddleware() gin.HandlerFunc {
+	return authControllerObj.tutorMiddleware
 }
