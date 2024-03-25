@@ -16,7 +16,9 @@ type dataCenter interface {
 	getRowCount(string, *int64) *gorm.DB
 	getById(any, any, ...string) *gorm.DB
 	insertOne(any) *gorm.DB
+	insertAll(any) *gorm.DB
 	deleteOneById(any) *gorm.DB
+	getAllByPaginationWithCondition(any, int, int, any, any, ...string) *gorm.DB
 }
 
 type seapDataCenter struct {
@@ -68,6 +70,14 @@ func (d *seapDataCenter) getAllByPagination(dest any, offset, limit int, model a
 	return preloadedDb.Model(model).Limit(limit).Offset(offset).Find(dest)
 }
 
+func (d *seapDataCenter) getAllByPaginationWithCondition(dest any, offset, limit int, condition any, model any, preloads ...string) *gorm.DB {
+	preloadedDb := d.db
+	for _, s := range preloads {
+		preloadedDb = preloadedDb.Preload(s)
+	}
+	return preloadedDb.Model(model).Where(condition).Limit(limit).Offset(offset).Find(dest)
+}
+
 func (d *seapDataCenter) getRowCount(tableName string, count *int64) *gorm.DB {
 	return d.db.Table(tableName).Count(count)
 }
@@ -82,6 +92,10 @@ func (d *seapDataCenter) getById(dest any, model any, preloads ...string) *gorm.
 
 func (d *seapDataCenter) insertOne(dest any) *gorm.DB {
 	return d.db.Create(dest)
+}
+
+func (d *seapDataCenter) insertAll(dest any) *gorm.DB {
+	return d.insertOne(dest)
 }
 
 func (d *seapDataCenter) deleteOneById(dest any) *gorm.DB {

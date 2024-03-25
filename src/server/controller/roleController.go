@@ -44,10 +44,10 @@ func (rc *roleControllerImpl) getRoleById(context *gin.Context) {
 	context.JSON(http.StatusOK, response)
 }
 
-func GetAllRoles() func(*gin.Context) {
+func GetAllRoles() gin.HandlerFunc {
 	return roleControllerObj.getAllRoles
 }
 
-func GetRoleById() func(*gin.Context) {
+func GetRoleById() gin.HandlerFunc {
 	return roleControllerObj.getRoleById
 }

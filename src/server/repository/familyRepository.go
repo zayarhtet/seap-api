@@ -10,9 +10,10 @@ type FamilyRepository interface {
 	GetAllFamiliesWithMembers(int, int) *[]dao.FamilyWithMembers
 	GetMemberByIdWithFamilies(*dao.MemberWithFamilies) error
 	GetFamilyById(*dao.FamilyWithMembers) error
+	GetFamilyByIdWithDuties(*dao.FamilyWithDuties) error
 	SaveNewFamily(*dao.Family) error
 	SaveNewMember(*dto.MemberToFamilyRequest) error
-	GetMemberRoleInFamily(*dto.MemberToFamilyRequest) error
+	GetMemberRoleInFamily(*dao.MemberForFamily) error
 	GetRowCount() *int64
 }
 
@@ -46,8 +47,12 @@ func (fr FamilyRepositoryImpl) GetFamilyById(family *dao.FamilyWithMembers) erro
 	return dc.getById(family, &dao.FamilyWithMembers{}, "Members.User", "Members.MemberRole", "Members").Error
 }
 
-func (fr FamilyRepositoryImpl) GetMemberRoleInFamily(rq *dto.MemberToFamilyRequest) error {
-	return dc.getById(rq, &dto.MemberToFamilyRequest{}).Error
+func (fr FamilyRepositoryImpl) GetFamilyByIdWithDuties(family *dao.FamilyWithDuties) error {
+	return dc.getById(family, &dao.FamilyWithDuties{}, "Duties").Error
+}
+
+func (fr FamilyRepositoryImpl) GetMemberRoleInFamily(rq *dao.MemberForFamily) error {
+	return dc.getById(rq, &dao.MemberForFamily{}, "MemberRole").Error
 }
 
 func (fr FamilyRepositoryImpl) GetRowCount() *int64 {

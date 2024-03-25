@@ -34,3 +34,26 @@ type MemberWithFamilies struct {
 func (MemberWithFamilies) TableName() string {
 	return "member"
 }
+
+type MemberChild struct {
+	FirstName string `gorm:"column:first_name" json:"firstName"`
+	LastName  string `json:"lastName"`
+	Username  string `gorm:"primary_key" json:"username"`
+	Email     string `json:"email"`
+}
+
+func (MemberChild) TableName() string {
+	return "member"
+}
+
+type MemberWithDuties struct {
+	FirstName string            `gorm:"column:first_name" json:"firstName"`
+	LastName  string            `json:"lastName"`
+	Username  string            `gorm:"primary_key" json:"username"`
+	Email     string            `json:"email"`
+	Duties    []DutiesForMember `gorm:"foreignKey:Username" json:"duties"`
+}
+
+func (MemberWithDuties) TableName() string {
+	return "member"
+}

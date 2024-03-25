@@ -27,3 +27,13 @@ func getOneResponseByCallBack(context *gin.Context, id string, callback func(str
 	}
 	context.JSON(http.StatusOK, resp)
 }
+
+func getPaginatedResponseWithIdByCallBack(context *gin.Context, id string, callback func(string, int, int) (dto.Response, error)) {
+	size, page := paginated(context)
+	response, err := callback(id, size, page)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, response)
+}

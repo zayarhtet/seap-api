@@ -10,12 +10,14 @@ type IndividualController interface {
 	getMyMember(*gin.Context)
 	getMyRole(*gin.Context)
 	getMyFamilies(*gin.Context)
+	getMyDuties(*gin.Context)
 }
 
 type individualControllerImpl struct {
 	ms service.MemberService
 	rs service.RoleService
 	fs service.FamilyService
+	ds service.DutyService
 }
 
 var individualControllerObj IndividualController
@@ -28,6 +30,7 @@ func initIndividual() {
 		ms: service.NewMemberService(),
 		rs: service.NewRoleService(),
 		fs: service.NewFamilyService(),
+		ds: service.NewDutyService(),
 	}
 }
 
@@ -46,14 +49,23 @@ func (ic *individualControllerImpl) getMyFamilies(context *gin.Context) {
 	getOneResponseByCallBack(context, idRaw, ic.fs.GetFamiliesOnlyByUsername)
 }
 
-func GetMyMember() func(*gin.Context) {
+func (ic *individualControllerImpl) getMyDuties(context *gin.Context) {
+	idRaw := context.MustGet("username").(string)
+	getOneResponseByCallBack(context, idRaw, ic.ds.GetAllDutiesByMemberResponse)
+}
+
+func GetMyMember() gin.HandlerFunc {
 	return individualControllerObj.getMyMember
 }
 
-func GetMyFamilies() func(*gin.Context) {
+func GetMyFamilies() gin.HandlerFunc {
 	return individualControllerObj.getMyFamilies
 }
 
-func GetMyRole() func(*gin.Context) {
+func GetMyRole() gin.HandlerFunc {
 	return individualControllerObj.getMyRole
+}
+
+func GetMyDuties() gin.HandlerFunc {
+	return individualControllerObj.getMyDuties
 }

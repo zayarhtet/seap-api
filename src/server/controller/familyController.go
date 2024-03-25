@@ -13,6 +13,8 @@ type FamilyController interface {
 	getAllFamilies(*gin.Context)
 	getAllFamiliesWithMembers(*gin.Context)
 	getMemberByIdWithFamilies(*gin.Context)
+	getAllDutiesByFamilyId(*gin.Context)
+	getAllMembersByFamilyId(*gin.Context)
 	saveNewFamily(*gin.Context)
 	addNewMemberToFamily(*gin.Context)
 }
@@ -41,6 +43,16 @@ func (fc *familyControllerImpl) getAllFamiliesWithMembers(context *gin.Context) 
 func (fc *familyControllerImpl) getMemberByIdWithFamilies(context *gin.Context) {
 	idRaw := context.Param("id")
 	getOneResponseByCallBack(context, idRaw, fc.fs.GetMemberByIdWithFamiliesResponse)
+}
+
+func (fc *familyControllerImpl) getAllDutiesByFamilyId(context *gin.Context) {
+	idRaw := context.Param("famId")
+	getOneResponseByCallBack(context, idRaw, fc.fs.GetFamilyByIdWithDuties)
+}
+
+func (fc *familyControllerImpl) getAllMembersByFamilyId(context *gin.Context) {
+	idRaw := context.Param("famId")
+	getOneResponseByCallBack(context, idRaw, fc.fs.GetFamilyByIdWithMembers)
 }
 
 func (fc *familyControllerImpl) saveNewFamily(context *gin.Context) {
@@ -80,22 +92,30 @@ func (fc *familyControllerImpl) addNewMemberToFamily(context *gin.Context) {
 	context.JSON(http.StatusOK, family)
 }
 
-func GetAllFamilies() func(*gin.Context) {
+func GetAllFamilies() gin.HandlerFunc {
 	return familyControllerObj.getAllFamilies
 }
 
-func GetAllFamiliesWithMembers() func(*gin.Context) {
+func GetAllFamiliesWithMembers() gin.HandlerFunc {
 	return familyControllerObj.getAllFamiliesWithMembers
 }
 
-func GetMemberByIdWithFamilies() func(*gin.Context) {
+func GetMemberByIdWithFamilies() gin.HandlerFunc {
 	return familyControllerObj.getMemberByIdWithFamilies
 }
 
-func SaveNewFamily() func(*gin.Context) {
+func SaveNewFamily() gin.HandlerFunc {
 	return familyControllerObj.saveNewFamily
 }
 
-func AddNewMemberToFamily() func(*gin.Context) {
+func AddNewMemberToFamily() gin.HandlerFunc {
 	return familyControllerObj.addNewMemberToFamily
+}
+
+func GetAllDutiesByFamilyId() gin.HandlerFunc {
+	return familyControllerObj.getAllDutiesByFamilyId
+}
+
+func GetAllMembersByFamilyId() gin.HandlerFunc {
+	return familyControllerObj.getAllMembersByFamilyId
 }
