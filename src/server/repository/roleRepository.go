@@ -7,7 +7,7 @@ import (
 type RoleRepository interface {
 	GetAllRoles(int, int) *[]dao.Role
 	GetRowCount() *int64
-	GetRoleById(id uint) (*dao.Role, error)
+	GetRoleById(uint) (*dao.Role, error)
 }
 
 type RoleRepositoryImpl struct{}

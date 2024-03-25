@@ -183,5 +183,212 @@ FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
 WHERE TABLE_NAME = 'family_member';
 
 use seap_db;
+show tables;
 describe credential;
 
+create table duty (
+	duty_id varchar(255) primary key not null,
+    title varchar(255) not null,
+    instruction varchar(1000),
+    publishing_date timestamp not null,
+    deadline_date timestamp not null,
+    closing_date timestamp not null,
+    family_id varchar(255) not null,
+    point_system bool default true,
+    possible_points double,
+    multipleSubmission bool default true,
+	CONSTRAINT FK_duty_family FOREIGN KEY (family_id)
+    REFERENCES family(family_id) on delete cascade
+);
+
+select * from duty;
+
+create table grading (
+	username varchar(255) not null,
+    duty_id varchar(255) not null,
+    family_id varchar(255) not null,
+    submitted bool default false,
+    points double,
+    is_late bool default false,
+    is_passed bool default false,
+    grade_comment varchar(1000),
+    execution_comment varchar(2000),
+    primary key (username, duty_id, family_id),
+	CONSTRAINT FK_grading_member FOREIGN KEY (username)
+    REFERENCES member(username) on delete cascade,
+	CONSTRAINT FK_grading_family FOREIGN KEY (family_id)
+    REFERENCES family(family_id) on delete cascade,
+    constraint FK_grading_duty foreign key (duty_id)
+    references duty(duty_id)
+);
+describe grading;
+alter table grading drop primary key;
+
+alter table grading drop constraint FK_grading_member;
+alter table grading add constraint FK_grading_member FOREIGN KEY (username)
+    REFERENCES member(username) on delete cascade;
+alter table grading drop constraint FK_grading_family;
+alter table grading add constraint FK_grading_family FOREIGN KEY (family_id)
+    REFERENCES family(family_id) on delete cascade;
+alter table grading drop constraint FK_grading_duty;
+alter table grading add constraint FK_grading_duty foreign key (duty_id)
+    references duty(duty_id);
+
+alter table grading add column grading_id varchar(255) primary key not null;
+
+select * from grading;
+alter table grading add column submitted_at timestamp;
+
+describe duty;
+select * from duty;
+delete from duty where duty_id = "cd8cc9bb-0724-424d-bd94-999195e3cc84";
+insert into duty (
+duty_id, family_id, title, publishing_date, deadline_date, closing_date, possible_points, instruction ) values (
+"44062536-0d5c-422d-9dd2-b4b03fb7b3df", "ff716cbb-501f-471b-b84c-fdc1b6cd6f16", "PT1",
+TIMESTAMP('2024-03-16 14:30:45'), TIMESTAMP('2024-03-17 14:30:45'), TIMESTAMP('2024-03-17 14:30:45'), 100, "download the file and solve.");
+
+insert into duty (
+duty_id, family_id, title, publishing_date, deadline_date, closing_date, possible_points, instruction ) values (
+"7cb57570-7e36-4967-8d54-b5b65dca9531", "9dc1b896-4384-4cc8-bbcc-aaa773067153", "Assignment II.",
+TIMESTAMP('2024-03-16 14:30:45'), TIMESTAMP('2024-03-23 14:30:45'), TIMESTAMP('2024-03-23 14:30:45'), 100, "download the file and solve.");
+
+insert into duty (
+duty_id, family_id, title, publishing_date, deadline_date, closing_date, possible_points, instruction ) values (
+"f21feab1-914b-4107-b19c-07be74ebd7f6", "803360bc-71f4-4b10-a119-ed93de707650", "Quiz I.",
+TIMESTAMP('2024-03-16 14:30:45'), TIMESTAMP('2024-03-23 14:30:45'), TIMESTAMP('2024-03-23 14:30:45'), 100, "download the file and solve.");
+
+create table submitted_file (
+	file_id varchar(255) primary key not null,
+    grading_id varchar(255) not null,
+    file_path varchar(1000) not null,
+	submitted_at timestamp default current_timestamp,
+	constraint submitted_file_grading foreign key (grading_id) references grading(grading_id) on delete cascade
+);
+
+create table given_file (
+	file_id varchar(255) primary key not null,
+    duty_id varchar(255) not null,
+    file_path varchar(1000) not null,
+    constraint given_file_duty foreign key (duty_id) references duty(duty_id) on delete cascade
+);
+insert into given_file (file_id, duty_id, file_path)
+values ("9ef621b5-3186-4f3e-acd9-69c6406ab24f", "cd8cc9bb-0724-424d-bd94-999195e3cc84", "./brnyr/HW1.icl");
+
+insert into given_file (file_id, duty_id, file_path)
+values ("dd0d11e9-c2b5-401b-bcd8-980bf7661604", "cd8cc9bb-0724-424d-bd94-999195e3cc84", "./brnyr/HW12.icl");
+
+insert into given_file (file_id, duty_id, file_path)
+values ("de36545b-b0bc-4fb7-91c1-dbbc62e16ce5", "dc80e248-6afe-4638-88b0-a67f3c527c7b", "./brnyr/HW2.icl");
+use seap_db;
+select * from grading;
+describe grading;
+insert into grading (
+grading_id, username, duty_id, family_id, submitted, points, is_passed, grade_comment, execution_comment, submitted_at
+) values (
+	"a4b27bd4-7924-4805-92bb-1d90d92eb4b5",
+    "HELLO1",
+    "f21feab1-914b-4107-b19c-07be74ebd7f6",
+    "803360bc-71f4-4b10-a119-ed93de707650",
+    true,
+    100,
+    true,
+    "GOOD",
+    "good",
+     TIMESTAMP(current_timestamp)
+);
+
+insert into grading (
+grading_id, username, duty_id, family_id, submitted, points, is_passed, grade_comment, execution_comment, submitted_at
+) values (
+	"ab8f55af-4213-49a1-8a6a-a2f316f71b99",
+    "HELLO2",
+    "f21feab1-914b-4107-b19c-07be74ebd7f6",
+    "803360bc-71f4-4b10-a119-ed93de707650",
+    true,
+    100,
+    true,
+    "GOOD",
+    "good",
+     TIMESTAMP(current_timestamp)
+);
+
+insert into grading (
+grading_id, username, duty_id, family_id, submitted, points, is_passed, grade_comment, execution_comment, submitted_at
+) values (
+	"0374545a-f686-43e0-bd2c-6fcc628d7f96",
+    "HELLO3",
+    "bed5c9f8-4813-4e02-b903-0b6b0a942503",
+    "9dc1b896-4384-4cc8-bbcc-aaa773067153",
+    true,
+    100,
+    true,
+    "GOOD",
+    "good",
+     TIMESTAMP(current_timestamp)
+);
+
+insert into grading (
+grading_id, username, duty_id, family_id, submitted, points, is_passed, grade_comment, execution_comment, submitted_at
+) values (
+	"c6ea6524-ce79-4583-82c6-8e77975cfca4",
+    "HELLO3",
+    "7cb57570-7e36-4967-8d54-b5b65dca9531",
+    "9dc1b896-4384-4cc8-bbcc-aaa773067153",
+    true,
+    100,
+    true,
+    "GOOD",
+    "good",
+     TIMESTAMP(current_timestamp)
+);
+
+insert into grading (
+grading_id, username, duty_id, family_id, submitted, points, is_passed, grade_comment, execution_comment, submitted_at
+) values (
+	"c3dba5cb-9910-4321-af3c-f14f97483af1",
+    "miyuki",
+    "44062536-0d5c-422d-9dd2-b4b03fb7b3df",
+    "ff716cbb-501f-471b-b84c-fdc1b6cd6f16",
+    true,
+    100,
+    true,
+    "GOOD",
+    "good",
+     TIMESTAMP(current_timestamp)
+);
+
+insert into grading (
+grading_id, username, duty_id, family_id, submitted, points, is_passed, grade_comment, execution_comment, submitted_at
+) values (
+	"0ec8d8e4-8885-46ad-bfbd-8f9e89e1eaa2",
+    "miyuki",
+    "cd8cc9bb-0724-424d-bd94-999195e3cc84",
+    "ff716cbb-501f-471b-b84c-fdc1b6cd6f16",
+    true,
+    100,
+    true,
+    "GOOD",
+    "good",
+     TIMESTAMP(current_timestamp)
+);
+
+insert into grading (
+grading_id, username, duty_id, family_id, submitted, points, is_passed, grade_comment, execution_comment, submitted_at
+) values (
+	"8741cedc-8fae-463b-8447-f5ac1023a2c4",
+    "miyuki",
+    "dc80e248-6afe-4638-88b0-a67f3c527c7b",
+    "ff716cbb-501f-471b-b84c-fdc1b6cd6f16",
+    true,
+    100,
+    true,
+    "GOOD",
+    "good",
+     TIMESTAMP(current_timestamp)
+);
+use seap_db;
+describe grading;
+describe duty;
+
+ALTER TABLE duty 
+RENAME COLUMN multipleSubmission TO multiple_submission;

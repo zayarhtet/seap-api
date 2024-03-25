@@ -12,9 +12,11 @@ type FamilyService interface {
 	GetAllFamiliesWithMembersResponse(int, int) (dto.Response, error)
 	GetMemberByIdWithFamiliesResponse(string) (dto.Response, error)
 	GetFamiliesOnlyByUsername(string) (dto.Response, error)
-	GetFamilyById(familyId string) (dto.Response, error)
+	GetFamilyByIdWithMembers(string) (dto.Response, error)
+	GetFamilyByIdWithDuties(string) (dto.Response, error)
 	SaveNewFamily(string, dto.NewFamilyRequest) (dto.Response, error)
 	AddMemberToFamily(dto.MemberToFamilyRequest) (dto.Response, error)
+	RoleInFamily(string, string) (string, error)
 	IsTutorInFamily(string, string) (bool, error)
 }
 
@@ -86,7 +88,7 @@ func (fs familyServiceImpl) GetFamiliesOnlyByUsername(username string) (dto.Resp
 	return newResp, nil
 }
 
-func (fs familyServiceImpl) GetFamilyById(familyId string) (dto.Response, error) {
+func (fs familyServiceImpl) GetFamilyByIdWithMembers(familyId string) (dto.Response, error) {
 	var member *dao.FamilyWithMembers = &dao.FamilyWithMembers{
 		FamilyId: familyId,
 	}
@@ -96,6 +98,19 @@ func (fs familyServiceImpl) GetFamilyById(familyId string) (dto.Response, error)
 	}
 
 	newResp := BeforeDataResponse[dao.FamilyWithMembers](&[]dao.FamilyWithMembers{*member}, 1)
+	return newResp, nil
+}
+
+func (fs familyServiceImpl) GetFamilyByIdWithDuties(familyId string) (dto.Response, error) {
+	var member *dao.FamilyWithDuties = &dao.FamilyWithDuties{
+		FamilyId: familyId,
+	}
+	err := fs.fr.GetFamilyByIdWithDuties(member)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(404, "Username does not exist.")), err
+	}
+
+	newResp := BeforeDataResponse[dao.FamilyWithDuties](&[]dao.FamilyWithDuties{*member}, 1)
 	return newResp, nil
 }
 
@@ -112,7 +127,7 @@ func (fs familyServiceImpl) SaveNewFamily(username string, input dto.NewFamilyRe
 		return BeforeErrorResponse(PrepareErrorMap(404, err.Error())), err
 	}
 	if username == "admin" {
-		return fs.GetFamilyById(id)
+		return fs.GetFamilyByIdWithMembers(id)
 	}
 	return fs.AddMemberToFamily(dto.MemberToFamilyRequest{FamilyId: id, Username: username, RoleId: 1})
 }
@@ -122,19 +137,27 @@ func (fs familyServiceImpl) AddMemberToFamily(input dto.MemberToFamilyRequest) (
 	if err != nil {
 		return BeforeErrorResponse(PrepareErrorMap(404, err.Error())), err
 	}
-	return fs.GetFamilyById(input.FamilyId)
+	return fs.GetFamilyByIdWithMembers(input.FamilyId)
 }
 
-func (fs familyServiceImpl) IsTutorInFamily(username, familyId string) (bool, error) {
-	var rq *dto.MemberToFamilyRequest = &dto.MemberToFamilyRequest{
+func (fs familyServiceImpl) RoleInFamily(username, familyId string) (string, error) {
+	var rq *dao.MemberForFamily = &dao.MemberForFamily{
 		FamilyId: familyId,
 		Username: username,
 	}
 	err := fs.fr.GetMemberRoleInFamily(rq)
 	if err != nil {
+		return "", err
+	}
+	return rq.MemberRole.Name, nil
+}
+
+func (fs familyServiceImpl) IsTutorInFamily(username, familyId string) (bool, error) {
+	role, err := fs.RoleInFamily(username, familyId)
+	if err != nil {
 		return false, err
 	}
-	return rq.RoleId <= 1, nil
+	return role == "tutor" || role == "admin", nil
 }
 
 func NewFamilyService() FamilyService {

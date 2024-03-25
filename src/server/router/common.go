@@ -19,5 +19,8 @@ func Init() {
 	adminRoutes()
 	individualRoutes()
 	tutorRoutes()
+	familyTutorRoutes()
+	familyTuteeRoutes()
+	familyMemberRoutes()
 	seapRouter.Run(":8000")
 }

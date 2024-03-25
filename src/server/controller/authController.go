@@ -19,10 +19,14 @@ type AuthController interface {
 	adminMiddleware(*gin.Context)
 	individualMiddleware(*gin.Context)
 	tutorMiddleware(*gin.Context)
+	familyTutorMiddleware(*gin.Context)
+	familyTuteeMiddleware(*gin.Context)
+	familyMemberMiddleware(*gin.Context)
 }
 
 type authControllerImpl struct {
 	ms service.MemberService
+	fs service.FamilyService
 }
 
 var authControllerObj AuthController
@@ -32,7 +36,7 @@ func initAuth() {
 		return
 	}
 
-	authControllerObj = &authControllerImpl{ms: service.NewMemberService()}
+	authControllerObj = &authControllerImpl{ms: service.NewMemberService(), fs: service.NewFamilyService()}
 }
 
 func (a *authControllerImpl) registerResp(context *gin.Context) {
@@ -117,6 +121,34 @@ func authorizeByRole(context *gin.Context, roles []string) {
 	context.Abort()
 }
 
+func authorizeByFamilyRole(context *gin.Context, roles []string, a *authControllerImpl) {
+	username, _, err := validateTokenAndClaims(context)
+	if err != nil {
+		context.JSON(parseErrorAndResponse(err))
+		context.Abort()
+		return
+	}
+	famIdRaw := context.Param("famId")
+
+	role, err := a.fs.RoleInFamily(username, famIdRaw)
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "You are not a tutor of this family.")))
+		context.Abort()
+		return
+	}
+	for _, s := range roles {
+		if s == role {
+			context.Set("username", username)
+			context.Set("role", role)
+			context.Next()
+			return
+		}
+	}
+	context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "You are not a tutor of this family.")))
+	context.Abort()
+}
+
 func (a *authControllerImpl) adminMiddleware(context *gin.Context) {
 	authorizeByRole(context, []string{"admin"})
 }
@@ -129,11 +161,23 @@ func (a *authControllerImpl) tutorMiddleware(context *gin.Context) {
 	authorizeByRole(context, []string{"admin", "tutor"})
 }
 
-func Register() func(*gin.Context) {
+func (a *authControllerImpl) familyTutorMiddleware(context *gin.Context) {
+	authorizeByFamilyRole(context, []string{"tutor"}, a)
+}
+
+func (a *authControllerImpl) familyTuteeMiddleware(context *gin.Context) {
+	authorizeByFamilyRole(context, []string{"tutee"}, a)
+}
+
+func (a *authControllerImpl) familyMemberMiddleware(context *gin.Context) {
+	authorizeByFamilyRole(context, []string{"tutee", "tutor"}, a)
+}
+
+func Register() gin.HandlerFunc {
 	return authControllerObj.registerResp
 }
 
-func Login() func(*gin.Context) {
+func Login() gin.HandlerFunc {
 	return authControllerObj.loginResp
 }
 
@@ -147,4 +191,16 @@ func IndividualMiddleware() gin.HandlerFunc {
 
 func TutorMiddleware() gin.HandlerFunc {
 	return authControllerObj.tutorMiddleware
+}
+
+func FamilyTutorMiddleware() gin.HandlerFunc {
+	return authControllerObj.familyTutorMiddleware
+}
+
+func FamilyTuteeMiddleware() gin.HandlerFunc {
+	return authControllerObj.familyTuteeMiddleware
+}
+
+func FamilyMemberMiddleware() gin.HandlerFunc {
+	return authControllerObj.familyMemberMiddleware
 }

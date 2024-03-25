@@ -45,18 +45,18 @@ func (mc *memberControllerImpl) deleteMember(context *gin.Context) {
 
 }
 
-func GetAllMembers() func(*gin.Context) {
+func GetAllMembers() gin.HandlerFunc {
 	return memberControllerObj.getAllMembers
 }
 
-func GetAllMembersWithFamilies() func(*gin.Context) {
+func GetAllMembersWithFamilies() gin.HandlerFunc {
 	return memberControllerObj.getAllMembersWithFamilies
 }
 
-func GetMemberById() func(*gin.Context) {
+func GetMemberById() gin.HandlerFunc {
 	return memberControllerObj.getMemberById
 }
 
-func DeleteMember() func(*gin.Context) {
+func DeleteMember() gin.HandlerFunc {
 	return memberControllerObj.deleteMember
 }
