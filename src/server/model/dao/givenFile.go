@@ -2,7 +2,7 @@ package dao
 
 type GivenFile struct {
 	FileId string `gorm:"primary_key" json:"fileId"`
-	DutyId string `json:"-"`
+	DutyId string `json:"dutyId" binding:"required"`
 	//Grading_    Grading `gorm:"foreignKey:GradingId;references:GradingId" json:"grade"`
 	FilePath string `json:"filePath"`
 }

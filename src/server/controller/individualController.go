@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/zayarhtet/seap-api/src/server/service"
@@ -11,6 +13,7 @@ type IndividualController interface {
 	getMyRole(*gin.Context)
 	getMyFamilies(*gin.Context)
 	getMyDuties(*gin.Context)
+	getMyRoleInFamily(*gin.Context)
 }
 
 type individualControllerImpl struct {
@@ -54,6 +57,18 @@ func (ic *individualControllerImpl) getMyDuties(context *gin.Context) {
 	getOneResponseByCallBack(context, idRaw, ic.ds.GetAllDutiesByMemberResponse)
 }
 
+func (ic *individualControllerImpl) getMyRoleInFamily(context *gin.Context) {
+	idRaw := context.MustGet("username").(string)
+	famIdRaw := context.Param("famId")
+
+	resp, err := ic.fs.GetMyRoleInFamily(idRaw, famIdRaw)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, err.Error())))
+		return
+	}
+	context.JSON(http.StatusOK, resp)
+}
+
 func GetMyMember() gin.HandlerFunc {
 	return individualControllerObj.getMyMember
 }
@@ -64,6 +79,10 @@ func GetMyFamilies() gin.HandlerFunc {
 
 func GetMyRole() gin.HandlerFunc {
 	return individualControllerObj.getMyRole
+}
+
+func GetMyRoleInFamily() gin.HandlerFunc {
+	return individualControllerObj.getMyRoleInFamily
 }
 
 func GetMyDuties() gin.HandlerFunc {

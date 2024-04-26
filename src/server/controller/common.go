@@ -16,11 +16,12 @@ func Init() {
 	initIndividual()
 	initFamily()
 	initDuty()
+	initCDN()
 }
 
 func Welcome() func(context *gin.Context) {
 	return func(context *gin.Context) {
-		context.JSON(http.StatusOK, "Mingalar Br Mate Sway")
+		context.JSON(http.StatusOK, gin.H{"message": "success"})
 	}
 }
 

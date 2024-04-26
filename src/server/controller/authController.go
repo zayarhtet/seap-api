@@ -22,6 +22,7 @@ type AuthController interface {
 	familyTutorMiddleware(*gin.Context)
 	familyTuteeMiddleware(*gin.Context)
 	familyMemberMiddleware(*gin.Context)
+	corsMiddleware(*gin.Context)
 }
 
 type authControllerImpl struct {
@@ -122,7 +123,7 @@ func authorizeByRole(context *gin.Context, roles []string) {
 }
 
 func authorizeByFamilyRole(context *gin.Context, roles []string, a *authControllerImpl) {
-	username, _, err := validateTokenAndClaims(context)
+	username, role, err := validateTokenAndClaims(context)
 	if err != nil {
 		context.JSON(parseErrorAndResponse(err))
 		context.Abort()
@@ -130,7 +131,7 @@ func authorizeByFamilyRole(context *gin.Context, roles []string, a *authControll
 	}
 	famIdRaw := context.Param("famId")
 
-	role, err := a.fs.RoleInFamily(username, famIdRaw)
+	familyRole, err := a.fs.RoleInFamily(username, famIdRaw)
 
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "You are not a tutor of this family.")))
@@ -138,8 +139,9 @@ func authorizeByFamilyRole(context *gin.Context, roles []string, a *authControll
 		return
 	}
 	for _, s := range roles {
-		if s == role {
+		if s == familyRole {
 			context.Set("username", username)
+			context.Set("familyRole", familyRole)
 			context.Set("role", role)
 			context.Next()
 			return
@@ -173,6 +175,20 @@ func (a *authControllerImpl) familyMemberMiddleware(context *gin.Context) {
 	authorizeByFamilyRole(context, []string{"tutee", "tutor"}, a)
 }
 
+func (a *authControllerImpl) corsMiddleware(c *gin.Context) {
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+	c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
+	if c.Request.Method == "OPTIONS" {
+		c.AbortWithStatus(204)
+		return
+	}
+
+	c.Next()
+}
+
 func Register() gin.HandlerFunc {
 	return authControllerObj.registerResp
 }
@@ -203,4 +219,8 @@ func FamilyTuteeMiddleware() gin.HandlerFunc {
 
 func FamilyMemberMiddleware() gin.HandlerFunc {
 	return authControllerObj.familyMemberMiddleware
+}
+
+func CorsMiddleware() gin.HandlerFunc {
+	return authControllerObj.corsMiddleware
 }

@@ -47,7 +47,15 @@ func (fc *familyControllerImpl) getMemberByIdWithFamilies(context *gin.Context) 
 
 func (fc *familyControllerImpl) getAllDutiesByFamilyId(context *gin.Context) {
 	idRaw := context.Param("famId")
-	getOneResponseByCallBack(context, idRaw, fc.fs.GetFamilyByIdWithDuties)
+	username := context.MustGet("username").(string)
+
+	//getOneResponseByCallBack(context, idRaw, fc.fs.GetFamilyByIdWithDuties)
+	resp, err := fc.fs.GetFamilyByIdWithDuties(idRaw, username)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, err.Error())))
+		return
+	}
+	context.JSON(http.StatusOK, resp)
 }
 
 func (fc *familyControllerImpl) getAllMembersByFamilyId(context *gin.Context) {
@@ -57,13 +65,17 @@ func (fc *familyControllerImpl) getAllMembersByFamilyId(context *gin.Context) {
 
 func (fc *familyControllerImpl) saveNewFamily(context *gin.Context) {
 	idRaw := context.MustGet("username").(string)
-	var input dto.NewFamilyRequest
+	var familyName string = context.PostForm("familyName")
+	var familyInfo string = context.PostForm("familyInfo")
 
-	if err := context.ShouldBindJSON(&input); err != nil {
+	if len(familyName) == 0 || len(familyInfo) == 0 {
 		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, "Invalid Input")))
 		return
 	}
-	newFamily, err := fc.fs.SaveNewFamily(idRaw, input)
+	var input dto.NewFamilyRequest = dto.NewFamilyRequest{FamilyName: familyName, FamilyInfo: familyInfo}
+	file, _ := context.FormFile("familyIcon")
+
+	newFamily, err := fc.fs.SaveNewFamily(idRaw, input, file)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, newFamily)
 		return

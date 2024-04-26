@@ -392,3 +392,30 @@ describe duty;
 
 ALTER TABLE duty 
 RENAME COLUMN multipleSubmission TO multiple_submission;
+
+use seap_db;
+select * from grading;
+select * from family_member;
+select * from member;
+select * from family;
+select * from duty;
+select * from credential where credential_id = "47186c71-d626-4ccf-aa68-db183464f661";
+show tables; describe given_file; describe submitted_file;
+describe grading;
+alter table grading add column hasGraded bool default false;
+update credential set password = "$2a$10$d4HXxxg61rAzDQ9KsPdLUucHNf6qhtBOiQ1nc3QRwJfV4gLKvdvjm" where credential_id = "e0f5a784-aa4b-4523-a3bd-b4c01a6ca7e6";
+
+select * from duty where duty_id = "40736a34-d2f2-470c-a5ce-51f9f5804e99";
+describe duty;
+
+select * from given_file;
+
+select * from submitted_file;
+member (member_id, profilepath)
+
+describe given_file;
+
+file_table (file_id, path)
+given_file_table (dutyId, file_id)
+submitted_file_table (grading_id, file_id, submitted_at)
+member (member_id, file_id)
