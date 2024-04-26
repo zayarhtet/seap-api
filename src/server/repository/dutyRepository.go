@@ -10,6 +10,14 @@ type DutyRepository interface {
 	CreateGrades([]*dao.Grading) error
 	GetAllGradingByDutyId(*dao.Grading, int, int) *[]dao.Grading
 	GetDutyById(*dao.Duty) error
+	GetDutiesByUsername(*dao.MyDuty) *[]dao.MyDuty
+	InsertGivenFilesMetadata([]*dao.GivenFile) error
+	GetGivenFileById(*dao.GivenFile) error
+	GetSubmittedFileById(*dao.SubmittedFile) error
+	GetGradingByStructCondition(*dao.Grading, *dao.Grading) error
+	InsertSubmittedFilesMetadata([]*dao.SubmittedFile) error
+	GetAllSubmittedFilesMetadata(*dao.SubmittedFile) *[]dao.SubmittedFile
+	DeleteSubmittedFileById(*dao.SubmittedFile) error
 }
 
 type DutyRepositoryImpl struct{}
@@ -29,20 +37,64 @@ func (d DutyRepositoryImpl) GetMemberWithDutiesByUsername(member *dao.MemberWith
 	return dc.getById(member, &dao.MemberWithDuties{}, "Duties.Duty_", "Duties").Error
 }
 
+func (d DutyRepositoryImpl) GetDutiesByUsername(condition *dao.MyDuty) *[]dao.MyDuty {
+	var duties []dao.MyDuty
+	dc.getAllByPaginationWithCondition(&duties, 0, 100, condition, &dao.MyDuty{}, "Duty_", "Family_")
+	return &duties
+}
+
 func (d DutyRepositoryImpl) SaveDuty(duty *dao.Duty) error {
 	return dc.insertOne(duty).Error
 }
 
 func (d DutyRepositoryImpl) CreateGrades(grades []*dao.Grading) error {
+	if len(grades) == 0 {
+		return nil
+	}
 	return dc.insertAll(grades).Error
 }
 
 func (d DutyRepositoryImpl) GetAllGradingByDutyId(condition *dao.Grading, offset, limit int) *[]dao.Grading {
 	var gradings []dao.Grading
-	dc.getAllByPaginationWithCondition(&gradings, offset, limit, condition, &dao.Grading{}, "Duty_", "Member_")
+	dc.getAllByPaginationWithCondition(&gradings, offset, limit, condition, &dao.Grading{}, "Duty_", "Member_", "Files")
 	return &gradings
 }
 
 func (d DutyRepositoryImpl) GetDutyById(duty *dao.Duty) error {
 	return dc.getById(duty, &dao.Duty{}, "Family_", "Files").Error
+}
+
+func (d DutyRepositoryImpl) InsertGivenFilesMetadata(metadata []*dao.GivenFile) error {
+	if len(metadata) == 0 {
+		return nil
+	}
+	return dc.insertAll(metadata).Error
+}
+
+func (d DutyRepositoryImpl) GetGivenFileById(gFile *dao.GivenFile) error {
+	return dc.getById(gFile, &dao.GivenFile{}).Error
+}
+
+func (d DutyRepositoryImpl) GetSubmittedFileById(sFile *dao.SubmittedFile) error {
+	return dc.getById(sFile, &dao.SubmittedFile{}).Error
+}
+
+func (d DutyRepositoryImpl) GetGradingByStructCondition(dest *dao.Grading, condition *dao.Grading) error {
+	return dc.getOneByStructCondition(dest, condition).Error
+}
+
+func (d DutyRepositoryImpl) InsertSubmittedFilesMetadata(metadata []*dao.SubmittedFile) error {
+	if len(metadata) == 0 {
+		return nil
+	}
+	return dc.insertAll(metadata).Error
+}
+
+func (d DutyRepositoryImpl) GetAllSubmittedFilesMetadata(condition *dao.SubmittedFile) *[]dao.SubmittedFile {
+	var files []dao.SubmittedFile
+	dc.getAllByStructCondition(&files, condition, &dao.SubmittedFile{})
+	return &files
+}
+func (d DutyRepositoryImpl) DeleteSubmittedFileById(sFile *dao.SubmittedFile) error {
+	return dc.deleteOneById(sFile).Error
 }

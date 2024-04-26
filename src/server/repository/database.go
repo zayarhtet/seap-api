@@ -19,6 +19,9 @@ type dataCenter interface {
 	insertAll(any) *gorm.DB
 	deleteOneById(any) *gorm.DB
 	getAllByPaginationWithCondition(any, int, int, any, any, ...string) *gorm.DB
+	getByIdWithCondition(any, string, any, ...string) *gorm.DB
+	getOneByStructCondition(any, any) *gorm.DB
+	getAllByStructCondition(any, any, any) *gorm.DB
 }
 
 type seapDataCenter struct {
@@ -100,4 +103,24 @@ func (d *seapDataCenter) insertAll(dest any) *gorm.DB {
 
 func (d *seapDataCenter) deleteOneById(dest any) *gorm.DB {
 	return d.db.Delete(dest)
+}
+
+func (d *seapDataCenter) getByIdWithCondition(dest any, username string, model any, preloads ...string) *gorm.DB {
+	preloadedDb := d.db
+
+	preloadedDb = preloadedDb.Preload("DutiesWithSubmission", "username = (?)", username).Preload("DutiesWithSubmission.Duty_")
+
+	return preloadedDb.Model(model).Where(dest).First(dest)
+}
+
+func (d *seapDataCenter) getOneByStructCondition(dest any, condition any) *gorm.DB {
+	return d.db.Where(condition).First(dest)
+}
+
+func (d *seapDataCenter) getAllByStructCondition(dest any, condition any, model any) *gorm.DB {
+	//preloadedDb := d.db
+	//for _, s := range preloads {
+	//	preloadedDb = preloadedDb.Preload(s)
+	//}
+	return d.db.Model(model).Where(condition).Find(dest)
 }

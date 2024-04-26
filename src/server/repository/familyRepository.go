@@ -10,10 +10,12 @@ type FamilyRepository interface {
 	GetAllFamiliesWithMembers(int, int) *[]dao.FamilyWithMembers
 	GetMemberByIdWithFamilies(*dao.MemberWithFamilies) error
 	GetFamilyById(*dao.FamilyWithMembers) error
-	GetFamilyByIdWithDuties(*dao.FamilyWithDuties) error
+	GetFamilyByIdWithDutiesForTutee(*dao.FamilyWithDuties, string) error
+	GetFamilyByIdWithDutiesForTutor(*dao.FamilyWithDuties) error
 	SaveNewFamily(*dao.Family) error
 	SaveNewMember(*dto.MemberToFamilyRequest) error
 	GetMemberRoleInFamily(*dao.MemberForFamily) error
+	GetMyRoleInFamily(*dao.FamilyForMember) error
 	GetRowCount() *int64
 }
 
@@ -47,12 +49,20 @@ func (fr FamilyRepositoryImpl) GetFamilyById(family *dao.FamilyWithMembers) erro
 	return dc.getById(family, &dao.FamilyWithMembers{}, "Members.User", "Members.MemberRole", "Members").Error
 }
 
-func (fr FamilyRepositoryImpl) GetFamilyByIdWithDuties(family *dao.FamilyWithDuties) error {
+func (fr FamilyRepositoryImpl) GetFamilyByIdWithDutiesForTutee(family *dao.FamilyWithDuties, username string) error {
+	return dc.getByIdWithCondition(family, username, &dao.FamilyWithDuties{}).Error
+}
+
+func (fr FamilyRepositoryImpl) GetFamilyByIdWithDutiesForTutor(family *dao.FamilyWithDuties) error {
 	return dc.getById(family, &dao.FamilyWithDuties{}, "Duties").Error
 }
 
 func (fr FamilyRepositoryImpl) GetMemberRoleInFamily(rq *dao.MemberForFamily) error {
 	return dc.getById(rq, &dao.MemberForFamily{}, "MemberRole").Error
+}
+
+func (fr FamilyRepositoryImpl) GetMyRoleInFamily(member *dao.FamilyForMember) error {
+	return dc.getById(member, &dao.FamilyForMember{}, "MemberRole").Error
 }
 
 func (fr FamilyRepositoryImpl) GetRowCount() *int64 {

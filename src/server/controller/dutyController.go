@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -53,7 +52,6 @@ func (dc *dutyControllerImpl) addNewGrade(context *gin.Context) {
 func (dc *dutyControllerImpl) saveNewDuty(context *gin.Context) {
 	var input dao.Duty
 	if err := context.ShouldBindJSON(&input); err != nil {
-		log.Println(err.Error())
 		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, "Invalid Input")))
 		return
 	}

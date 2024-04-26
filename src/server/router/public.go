@@ -32,6 +32,7 @@ func adminRoutes() {
 func individualRoutes() {
 	protected := seapRouter.Group("/api/my/")
 	protected.Use(controller.IndividualMiddleware())
+	protected.GET("/valid", controller.Welcome())
 	protected.GET("/role", controller.GetMyRole())
 	protected.GET("/member", controller.GetMyMember())
 	protected.GET("/families", controller.GetMyFamilies())
@@ -50,9 +51,11 @@ func familyTutorRoutes() {
 	familyTutor.Use(controller.FamilyTutorMiddleware())
 	familyTutor.POST("/family/:famId/addMember", controller.AddNewMemberToFamily())
 	familyTutor.GET("/family/:famId/members", controller.GetAllMembersByFamilyId()) // get all duties associated with the fam id
-	//familyTutor.POST("family/:famId/create/grade", controller.AddNewGrade())        // username,familyId, dutyId, points, gradeComment
+	familyTutor.POST("family/:famId/create/grade", controller.AddNewGrade())        // username,familyId, dutyId, points, gradeComment
 	familyTutor.POST("family/:famId/create/duty", controller.SaveNewDuty())
+	familyTutor.POST("/cdn/upload/:dutyId/given-file", controller.SaveGivenFiles())
 	familyTutor.GET("/family/:famId/duty/:dutyId/grading", controller.GetGradingByDutyId())
+
 	//familyTutor.POST("/execute/duty", controller.TriggerExecution()) // dutyId
 }
 
@@ -60,8 +63,12 @@ func familyMemberRoutes() {
 	// has to check if this user is a member of this fam
 	familyMember := seapRouter.Group("/api/my/")
 	familyMember.Use(controller.FamilyMemberMiddleware())
-	familyMember.GET("/family/:famId/duties", controller.GetAllDutiesByFamilyId()) // get all duties associated with the fam id
-	familyMember.GET("/family/:famId/duty/:dutyId", controller.GetDutyById())      // get specific duty by id
+	familyMember.GET("/family/:famId/duties", controller.GetAllDutiesByFamilyId())               // get all duties associated with the fam id
+	familyMember.GET("/family/:famId/duty/:dutyId", controller.GetDutyById())                    // get specific duty by id
+	familyMember.GET("cdn/download/:famId/:dutyId/file/:fileId", controller.DownloadGivenFile()) // get specific duty by id
+	familyMember.GET("/family/:famId/myrole", controller.GetMyRoleInFamily())
+	familyMember.GET("cdn/download/:famId/family-icon", controller.CDNProfileImage())
+	familyMember.GET("cdn/download/family/:famId/duty/:dutyId/submitted-file/:fileId", controller.DownloadSubmittedFile())
 
 }
 
@@ -70,8 +77,8 @@ func familyTuteeRoutes() {
 	familyTutee := seapRouter.Group("/api/my/")
 	familyTutee.Use(controller.FamilyTuteeMiddleware())
 
-	//// grab gradingId and insert the file into submitted_file table
 	//protected.GET("/submit/:gradingId", controller.GetGradingDetailForSubmission())
-	//protected.POST("/upload/:gradingId", controller.UploadFilesByTutee)     // username, familyId, dutyId, files
+	familyTutee.POST("cdn/upload/family/:famId/duty/:dutyId/submitted-file", controller.UploadSubmittedFiles()) // username, familyId, dutyId, files
+	familyTutee.DELETE("cdn/delete/family/:famId/duty/:dutyId/submitted-file/:fileId", controller.DeleteSubmittedFile())
 	//protected.POST("/submit/:gradingId/done", controller.SubmitDutyByTutee) // username, familyId, dutyId
 }
