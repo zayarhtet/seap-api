@@ -11,6 +11,8 @@ type DutyRepository interface {
 	GetAllGradingByDutyId(*dao.Grading, int, int) *[]dao.Grading
 	GetDutyById(*dao.Duty) error
 	GetDutiesByUsername(*dao.MyDuty) *[]dao.MyDuty
+	UpdateGrading(map[string]any, *dao.Grading) error
+
 	InsertGivenFilesMetadata([]*dao.GivenFile) error
 	GetGivenFileById(*dao.GivenFile) error
 	GetSubmittedFileById(*dao.SubmittedFile) error
@@ -97,4 +99,8 @@ func (d DutyRepositoryImpl) GetAllSubmittedFilesMetadata(condition *dao.Submitte
 }
 func (d DutyRepositoryImpl) DeleteSubmittedFileById(sFile *dao.SubmittedFile) error {
 	return dc.deleteOneById(sFile).Error
+}
+
+func (d DutyRepositoryImpl) UpdateGrading(fields map[string]any, model *dao.Grading) error {
+	return dc.updateModelByMap(fields, model).Error
 }

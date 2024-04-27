@@ -61,8 +61,17 @@ func (ds dutyServiceImpl) GetAllDutiesByMemberResponse(username string) (dto.Res
 }
 
 func (ds dutyServiceImpl) AddNewGradeResponse(request dto.NewGradeRequest) (dto.Response, error) {
+	var updatedGradingMap map[string]any = map[string]any{"points": request.Points, "has_graded": true}
+	if len(request.GradeComment) != 0 {
+		updatedGradingMap["grade_comment"] = request.GradeComment
+	}
+	var grading *dao.Grading = &dao.Grading{GradingId: request.GradingId}
+	err := ds.dr.UpdateGrading(updatedGradingMap, grading)
 
-	return nil, nil
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(400, err.Error())), err
+	}
+	return "HELLO SUCCESS", nil
 }
 
 func (ds dutyServiceImpl) SaveNewDutyResponse(duty dao.Duty) (dto.Response, error) {

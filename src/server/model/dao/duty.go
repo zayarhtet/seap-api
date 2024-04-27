@@ -16,7 +16,7 @@ type Duty struct {
 	FamilyId           string        `json:"familyId" binding:"required"`
 	Family_            Family        `gorm:"foreignKey:FamilyId;references:FamilyId" json:"family"`
 	PointSystem        bool          `json:"isPointSystem"`
-	PossiblePoints     int           `json:"totalPoints" binding:"required"`
+	PossiblePoints     int           `json:"totalPoints"`
 	MultipleSubmission bool          `json:"multipleSubmission"`
 	Files              []GivenFile   `gorm:"foreignKey:DutyId" json:"files"`
 }

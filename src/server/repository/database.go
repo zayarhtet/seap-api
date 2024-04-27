@@ -22,6 +22,8 @@ type dataCenter interface {
 	getByIdWithCondition(any, string, any, ...string) *gorm.DB
 	getOneByStructCondition(any, any) *gorm.DB
 	getAllByStructCondition(any, any, any) *gorm.DB
+
+	updateModelByMap(map[string]any, any) *gorm.DB
 }
 
 type seapDataCenter struct {
@@ -123,4 +125,8 @@ func (d *seapDataCenter) getAllByStructCondition(dest any, condition any, model 
 	//	preloadedDb = preloadedDb.Preload(s)
 	//}
 	return d.db.Model(model).Where(condition).Find(dest)
+}
+
+func (d *seapDataCenter) updateModelByMap(fields map[string]any, model any) *gorm.DB {
+	return d.db.Model(model).Updates(fields)
 }
