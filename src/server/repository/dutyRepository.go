@@ -20,6 +20,8 @@ type DutyRepository interface {
 	InsertSubmittedFilesMetadata([]*dao.SubmittedFile) error
 	GetAllSubmittedFilesMetadata(*dao.SubmittedFile) *[]dao.SubmittedFile
 	DeleteSubmittedFileById(*dao.SubmittedFile) error
+
+	DeleteDutyById(*dao.Duty) error
 }
 
 type DutyRepositoryImpl struct{}
@@ -99,6 +101,10 @@ func (d DutyRepositoryImpl) GetAllSubmittedFilesMetadata(condition *dao.Submitte
 }
 func (d DutyRepositoryImpl) DeleteSubmittedFileById(sFile *dao.SubmittedFile) error {
 	return dc.deleteOneById(sFile).Error
+}
+
+func (d DutyRepositoryImpl) DeleteDutyById(duty *dao.Duty) error {
+	return dc.deleteOneById(duty).Error
 }
 
 func (d DutyRepositoryImpl) UpdateGrading(fields map[string]any, model *dao.Grading) error {

@@ -22,7 +22,12 @@ type DutyService interface {
 	GetGivenFilePath(string, string) (string, error)
 	UploadSubmittedFiles([]*multipart.FileHeader, string, string, string) (dto.Response, error)
 	GetSubmittedFilePath(string, string, string, string) (string, error)
+	SubmitDutyResponse(string, string) error
+
 	DeleteSubmittedFileResponse(string, string, string) error
+	DeleteDutyResponse(string) (dto.Response, error)
+
+	GetMyGradingResponse(string, string) (dto.Response, error)
 }
 
 type dutyServiceImpl struct {
@@ -177,13 +182,27 @@ func (ds dutyServiceImpl) GetGivenFilePath(dutyId string, fileId string) (string
 }
 
 func (ds dutyServiceImpl) UploadSubmittedFiles(files []*multipart.FileHeader, dutyId, famId, username string) (dto.Response, error) {
+	var duty *dao.Duty = &dao.Duty{
+		DutyId: dutyId,
+	}
+	err := ds.dr.GetDutyById(duty)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(404, "record not found.")), err
+	}
+
+	closedTime, _ := time.Parse(util.YYYY_MM_DDTHH_MM_SS, duty.ClosingDate.String())
+
+	if time.Now().After(closedTime) {
+		return BeforeErrorResponse(PrepareErrorMap(400, "due date expired.")), err
+	}
+
 	var grading *dao.Grading = &dao.Grading{
 		FamilyId: famId,
 		DutyId:   dutyId,
 		Username: username,
 	}
-	err := ds.dr.GetGradingByStructCondition(grading, grading)
-	if err != nil {
+	err = ds.dr.GetGradingByStructCondition(grading, grading)
+	if err != nil || grading.Submitted {
 		return BeforeErrorResponse(PrepareErrorMap(404, "record not found.")), err
 	}
 
@@ -243,10 +262,24 @@ func (ds dutyServiceImpl) GetSubmittedFilePath(dutyId string, fileId string, use
 }
 
 func (ds dutyServiceImpl) DeleteSubmittedFileResponse(fileId, dutyId, username string) error {
+	var duty *dao.Duty = &dao.Duty{
+		DutyId: dutyId,
+	}
+	err := ds.dr.GetDutyById(duty)
+	if err != nil {
+		return err
+	}
+
+	closedTime, _ := time.Parse(util.YYYY_MM_DDTHH_MM_SS, duty.ClosingDate.String())
+
+	if time.Now().After(closedTime) {
+		return err
+	}
+
 	var subFile *dao.SubmittedFile = &dao.SubmittedFile{
 		FileId: fileId,
 	}
-	err := ds.dr.GetSubmittedFileById(subFile)
+	err = ds.dr.GetSubmittedFileById(subFile)
 	if err != nil {
 		return err
 	}
@@ -260,7 +293,7 @@ func (ds dutyServiceImpl) DeleteSubmittedFileResponse(fileId, dutyId, username s
 		return err
 	}
 
-	if grading.Username != username {
+	if grading.Username != username || grading.Submitted {
 		return errors.New("unauthorized")
 	}
 	filePath := subFile.FilePath
@@ -275,6 +308,53 @@ func (ds dutyServiceImpl) DeleteSubmittedFileResponse(fileId, dutyId, username s
 	}
 
 	return nil
+}
+
+func (ds dutyServiceImpl) SubmitDutyResponse(gradingId string, dutyId string) error {
+	var duty *dao.Duty = &dao.Duty{
+		DutyId: dutyId,
+	}
+	err := ds.dr.GetDutyById(duty)
+	if err != nil {
+		return err
+	}
+
+	closedTime, _ := time.Parse(util.YYYY_MM_DDTHH_MM_SS, duty.ClosingDate.String())
+
+	if time.Now().After(closedTime) {
+		return err
+	}
+
+	var updatedGradingMap map[string]any = map[string]any{"submitted": true}
+
+	var grading *dao.Grading = &dao.Grading{GradingId: gradingId}
+	err = ds.dr.UpdateGrading(updatedGradingMap, grading)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ds dutyServiceImpl) DeleteDutyResponse(dutyId string) (dto.Response, error) {
+	var duty *dao.Duty = &dao.Duty{DutyId: dutyId}
+	err := ds.dr.DeleteDutyById(duty)
+	if err != nil {
+		return "", err
+	}
+	return "success", nil
+}
+
+func (ds dutyServiceImpl) GetMyGradingResponse(dutyId string, username string) (dto.Response, error) {
+	var grading *dao.Grading = &dao.Grading{
+		DutyId:   dutyId,
+		Username: username,
+	}
+	err := ds.dr.GetGradingByStructCondition(grading, grading)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(400, err.Error())), err
+	}
+	return BeforeDataResponse[dao.Grading](&[]dao.Grading{*grading}, 1), nil
 }
 
 func NewDutyService() DutyService {

@@ -26,7 +26,6 @@ func adminRoutes() {
 	admin.GET("/families", controller.GetAllFamilies())
 	admin.GET("/families/members", controller.GetAllFamiliesWithMembers())
 	admin.GET("/duties", controller.GetAllDuties())
-	//admin.GET("/grading", controller.GetAllGrading())
 }
 
 func individualRoutes() {
@@ -56,6 +55,8 @@ func familyTutorRoutes() {
 	familyTutor.POST("/cdn/upload/:dutyId/given-file", controller.SaveGivenFiles())
 	familyTutor.GET("/family/:famId/duty/:dutyId/grading", controller.GetGradingByDutyId())
 
+	familyTutor.DELETE("/family/:famId", controller.DeleteFamily())
+	familyTutor.DELETE("/family/:famId/duty/:dutyId", controller.DeleteDuty())
 	//familyTutor.POST("/execute/duty", controller.TriggerExecution()) // dutyId
 }
 
@@ -77,8 +78,8 @@ func familyTuteeRoutes() {
 	familyTutee := seapRouter.Group("/api/my/")
 	familyTutee.Use(controller.FamilyTuteeMiddleware())
 
-	//protected.GET("/submit/:gradingId", controller.GetGradingDetailForSubmission())
+	familyTutee.GET("family/:famId/duty/:dutyId/my-grading", controller.GetMyGradingDetail())
 	familyTutee.POST("cdn/upload/family/:famId/duty/:dutyId/submitted-file", controller.UploadSubmittedFiles()) // username, familyId, dutyId, files
 	familyTutee.DELETE("cdn/delete/family/:famId/duty/:dutyId/submitted-file/:fileId", controller.DeleteSubmittedFile())
-	//protected.POST("/submit/:gradingId/done", controller.SubmitDutyByTutee) // username, familyId, dutyId
+	familyTutee.POST("/family/:famId/duty/:dutyId/submit/:gradingId/done", controller.SubmitDutyByTutee()) // username, familyId, dutyId
 }

@@ -17,6 +17,7 @@ type FamilyRepository interface {
 	GetMemberRoleInFamily(*dao.MemberForFamily) error
 	GetMyRoleInFamily(*dao.FamilyForMember) error
 	GetRowCount() *int64
+	DeleteFamilyById(*dao.Family) error
 }
 
 type FamilyRepositoryImpl struct{}
@@ -69,4 +70,8 @@ func (fr FamilyRepositoryImpl) GetRowCount() *int64 {
 	var count int64
 	dc.getRowCount("family", &count)
 	return &count
+}
+
+func (fr FamilyRepositoryImpl) DeleteFamilyById(family *dao.Family) error {
+	return dc.deleteOneById(family).Error
 }

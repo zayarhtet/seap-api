@@ -16,6 +16,9 @@ type DutyController interface {
 	saveNewDuty(*gin.Context)
 	getGradingByDutyId(*gin.Context)
 	getDutyById(*gin.Context)
+	submitDuty(*gin.Context)
+	deleteDuty(*gin.Context)
+	getMyGrading(*gin.Context)
 }
 
 type dutyControllerImpl struct {
@@ -69,9 +72,35 @@ func (dc *dutyControllerImpl) getGradingByDutyId(context *gin.Context) {
 }
 
 func (dc *dutyControllerImpl) getDutyById(context *gin.Context) {
-	// check if he is a member of dutyId and family
 	dutyId := context.Param("dutyId")
 	getOneResponseByCallBack(context, dutyId, dc.ds.GetDutyByIdResponse)
+}
+
+func (dc *dutyControllerImpl) submitDuty(context *gin.Context) {
+	gradingId := context.Param("gradingId")
+	dutyId := context.Param("dutyId")
+	err := dc.ds.SubmitDutyResponse(gradingId, dutyId)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
+func (dc *dutyControllerImpl) deleteDuty(context *gin.Context) {
+	dutyId := context.Param("dutyId")
+	getOneResponseByCallBack(context, dutyId, dc.ds.DeleteDutyResponse)
+}
+
+func (dc *dutyControllerImpl) getMyGrading(context *gin.Context) {
+	dutyId := context.Param("dutyId")
+	username := context.MustGet("username").(string)
+	resp, err := dc.ds.GetMyGradingResponse(dutyId, username)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, resp)
 }
 
 func GetAllDuties() gin.HandlerFunc {
@@ -92,4 +121,16 @@ func GetGradingByDutyId() gin.HandlerFunc {
 
 func GetDutyById() gin.HandlerFunc {
 	return dutyControllerObj.getDutyById
+}
+
+func SubmitDutyByTutee() gin.HandlerFunc {
+	return dutyControllerObj.submitDuty
+}
+
+func DeleteDuty() gin.HandlerFunc {
+	return dutyControllerObj.deleteDuty
+}
+
+func GetMyGradingDetail() gin.HandlerFunc {
+	return dutyControllerObj.getMyGrading
 }

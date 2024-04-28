@@ -17,6 +17,7 @@ type FamilyController interface {
 	getAllMembersByFamilyId(*gin.Context)
 	saveNewFamily(*gin.Context)
 	addNewMemberToFamily(*gin.Context)
+	deleteFamily(*gin.Context)
 }
 
 type familyControllerImpl struct {
@@ -104,6 +105,11 @@ func (fc *familyControllerImpl) addNewMemberToFamily(context *gin.Context) {
 	context.JSON(http.StatusOK, family)
 }
 
+func (fc *familyControllerImpl) deleteFamily(context *gin.Context) {
+	idRaw := context.Param("famId")
+	getOneResponseByCallBack(context, idRaw, fc.fs.DeleteFamilyResponse)
+}
+
 func GetAllFamilies() gin.HandlerFunc {
 	return familyControllerObj.getAllFamilies
 }
@@ -130,4 +136,8 @@ func GetAllDutiesByFamilyId() gin.HandlerFunc {
 
 func GetAllMembersByFamilyId() gin.HandlerFunc {
 	return familyControllerObj.getAllMembersByFamilyId
+}
+
+func DeleteFamily() gin.HandlerFunc {
+	return familyControllerObj.deleteFamily
 }

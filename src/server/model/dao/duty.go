@@ -26,7 +26,7 @@ func (Duty) TableName() string {
 }
 
 type DutyChild struct {
-	DutyId             string `gorm:"primary_key" json:"duty_id"`
+	DutyId             string `gorm:"primary_key" json:"dutyId"`
 	Title              string `json:"title"`
 	PointSystem        bool   `json:"isPointSystem"`
 	PossiblePoints     int    `json:"totalPoints"`
@@ -38,7 +38,7 @@ func (DutyChild) TableName() string {
 }
 
 type DutiesForFamily struct {
-	DutyId         string    `gorm:"primary_key" json:"duty_id"`
+	DutyId         string    `gorm:"primary_key" json:"dutyId"`
 	Title          string    `json:"title"`
 	PublishingDate time.Time `json:"publishedAt"`
 	DeadlineDate   time.Time `json:"dueDate"`
