@@ -26,6 +26,8 @@ func adminRoutes() {
 	admin.GET("/families", controller.GetAllFamilies())
 	admin.GET("/families/members", controller.GetAllFamiliesWithMembers())
 	admin.GET("/duties", controller.GetAllDuties())
+	admin.POST("promote/member/:username", controller.PromoteRole())
+	admin.POST("demote/member/:username", controller.DemoteRole())
 }
 
 func individualRoutes() {
@@ -70,7 +72,6 @@ func familyMemberRoutes() {
 	familyMember.GET("/family/:famId/myrole", controller.GetMyRoleInFamily())
 	familyMember.GET("cdn/download/:famId/family-icon", controller.CDNProfileImage())
 	familyMember.GET("cdn/download/family/:famId/duty/:dutyId/submitted-file/:fileId", controller.DownloadSubmittedFile())
-
 }
 
 func familyTuteeRoutes() {

@@ -15,6 +15,7 @@ type MemberService interface {
 	GetAllMembersWithFamiliesResponse(int, int) (dto.Response, error)
 	GetMemberByIdResponse(string) (dto.Response, error)
 	DeleteMemberResponse(string) (dto.Response, error)
+	GrantRoleResponse(string, int) (dto.Response, error)
 }
 
 type memberServiceImpl struct {
@@ -57,6 +58,19 @@ func (ms memberServiceImpl) SignUp(request dto.SignUpRequest) (dto.Response, err
 	newResp := BeforeDataResponse[dao.Member](&[]dao.Member{*member}, 1)
 
 	return newResp, nil
+}
+
+func (ms memberServiceImpl) GrantRoleResponse(username string, role int) (dto.Response, error) {
+	member := &dao.Member{
+		Username: username,
+	}
+	var updatedMember map[string]any = map[string]any{"role_id": role}
+	err := ms.mr.UpdateMember(updatedMember, member)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(400, "Bad Request")), err
+	}
+
+	return "success", nil
 }
 
 func (ms memberServiceImpl) Login(request dto.LoginRequest) (dto.Response, error) {

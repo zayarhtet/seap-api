@@ -11,6 +11,7 @@ type MemberRepository interface {
 	SaveMember(*dao.Member) (*dao.Member, error)
 	GetMemberByUsername(*dao.Member) error
 	DeleteMember(*dao.Member) (string, error)
+	UpdateMember(map[string]any, *dao.Member) error
 }
 
 type MemberRepositoryImpl struct{}
@@ -61,4 +62,8 @@ func (m MemberRepositoryImpl) DeleteMember(member *dao.Member) (string, error) {
 		return "", err
 	}
 	return credentialId, nil
+}
+
+func (m MemberRepositoryImpl) UpdateMember(updatedMap map[string]any, member *dao.Member) error {
+	return dc.updateModelByMap(updatedMap, member).Error
 }

@@ -1,0 +1,1510 @@
+{
+	"info": {
+		"_postman_id": "6c106c47-1527-461f-a909-ca890adf4eec",
+		"name": "SEAP_API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11391028"
+	},
+	"item": [
+		{
+			"name": "Role",
+			"item": [
+				{
+					"name": "Roles",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/roles?size=",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetRoleById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/role/:id",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"role",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RoleByIndividual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/role",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PromoteRole",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/promote/member/:username",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"promote",
+								"member",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DemoteRole",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/demote/member/:username",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"demote",
+								"member",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Member",
+			"item": [
+				{
+					"name": "Members",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/members",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"members"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "4",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"HELLO6\",\r\n    \"email\": \"blabla06\",\r\n    \"password\": \"\",\r\n    \"firstname\": \"first\",\r\n    \"lastname\": \"last\"\r\n}",
+
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/auth/register",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"HELLO3\",\r\n    \"password\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/auth/login",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMemberById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/member/:id",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"member",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "miyuki"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteMemberById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/member/:id",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"member",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "HELLO4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MembersWithFamilies",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/members/families",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"members",
+								"families"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMemberByIdWithFamilies",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/member/:id/families",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"member",
+								":id",
+								"families"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "miyuki"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Individual",
+			"item": [
+				{
+					"name": "MemberByIndividual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/member",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"member"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddMemberToFamily",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutee_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"familyId\": \"ff716cbb-501f-471b-b84c-fdc1b6cd6f16\",\r\n    \"username\": \"HELLO2\",\r\n    \"roleId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/addMember/",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"addMember",
+								""
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "ff716cbb-501f-471b-b84c-fdc1b6cd6f16"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RoleByIndividual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/role",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FamiliesByIndividual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/families",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"families"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DutiesByIndividual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/duties",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"duties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMyRoleInFamily",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/myrole",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"myrole"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "ff716cbb-501f-471b-b84c-fdc1b6cd6f16"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DutiesByUsernameAndFamily",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/duties",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"duties"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "ff716cbb-501f-471b-b84c-fdc1b6cd6f16"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Valid",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/valid",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"valid"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadGivenFiles",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": [
+										"/C:/Users/zayar/Pictures/Screenshot_1.png",
+										"/C:/Users/zayar/Pictures/Screenshot_2.png"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/cdn/upload/:dutyId/given-file",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"cdn",
+								"upload",
+								":dutyId",
+								"given-file"
+							],
+							"variable": [
+								{
+									"key": "dutyId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DownloadGivenFile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/cdn/download/:famId/:dutyId/file/:fileId",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"cdn",
+								"download",
+								":famId",
+								":dutyId",
+								"file",
+								":fileId"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "ff716cbb-501f-471b-b84c-fdc1b6cd6f16"
+								},
+								{
+									"key": "dutyId",
+									"value": "4e2c9950-22c3-45f9-b6f0-90798bb80293"
+								},
+								{
+									"key": "fileId",
+									"value": "90bd8f6a-eff9-4e06-ad45-2a4623f4171a"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadSubmittedFile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/cdn/upload/family/:famId/duty/:dutyId/submitted-file",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"cdn",
+								"upload",
+								"family",
+								":famId",
+								"duty",
+								":dutyId",
+								"submitted-file"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								},
+								{
+									"key": "dutyId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DownloadSubmittedFile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/cdn/download/family/:famId/duty/:dutyId/submitted-file/:fileId",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"cdn",
+								"download",
+								"family",
+								":famId",
+								"duty",
+								":dutyId",
+								"submitted-file",
+								":fileId"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								},
+								{
+									"key": "dutyId",
+									"value": ""
+								},
+								{
+									"key": "fileId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteSubmittedFile",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/cdn/delete/family/:famId/duty/:dutyId/submitted-file/:fileId",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"cdn",
+								"delete",
+								"family",
+								":famId",
+								"duty",
+								":dutyId",
+								"submitted-file",
+								":fileId"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								},
+								{
+									"key": "dutyId",
+									"value": ""
+								},
+								{
+									"key": "fileId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Family",
+			"item": [
+				{
+					"name": "admin",
+					"item": [
+						{
+							"name": "Families",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{seap_host}}:{{seap_port}}/api/admin/families",
+									"host": [
+										"{{seap_host}}"
+									],
+									"port": "{{seap_port}}",
+									"path": [
+										"api",
+										"admin",
+										"families"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "FamiliesWithMembers",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{seap_host}}:{{seap_port}}/api/admin/families/members",
+									"host": [
+										"{{seap_host}}"
+									],
+									"port": "{{seap_port}}",
+									"path": [
+										"api",
+										"admin",
+										"families",
+										"members"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CreateFamily",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "familyName",
+									"value": "thesis10",
+									"type": "text"
+								},
+								{
+									"key": "familyInfo",
+									"value": "thesis submission",
+									"type": "text"
+								},
+								{
+									"key": "family_icon",
+									"type": "file",
+									"src": "/C:/Users/zayar/Pictures/mybear.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/create/family",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"create",
+								"family"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFamilyByIdWithDuties",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/duties",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"duties"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "ff716cbb-501f-471b-b84c-fdc1b6cd6f16"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFamilyByIdWithMember",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutee_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/members",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"members"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "ff716cbb-501f-471b-b84c-fdc1b6cd6f16"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFamilyIcon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/cdn/download/:famId/family-icon",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"cdn",
+								"download",
+								":famId",
+								"family-icon"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "29217197-77d8-42dd-90d3-ba4d0b2cc7b7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Duty",
+			"item": [
+				{
+					"name": "GetAllDuties",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/admin/duties",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"admin",
+								"duties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "NewDuty",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"closingDate\": \"2024-04-24T18:36\",\r\n    \"dueDate\": \"2024-04-24T18:36\",\r\n    \"familyId\": \"25929b0c-b2f3-4bf4-966e-7d5782d549c8\",\r\n    \"instruction\": \"huhu\",\r\n    \"isPointSystem\": true,\r\n    \"multipleSubmission\": false,\r\n    \"publishedAt\": \"2024-04-22T18:36\",\r\n    \"title\": \"HELLO\",\r\n    \"totalPoints\": 98\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/create/duty",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"create",
+								"duty"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetGradingByDutyId",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutee_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/duty/:dutyId/grading",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"duty",
+								":dutyId",
+								"grading"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "ff716cbb-501f-471b-b84c-fdc1b6cd6f16"
+								},
+								{
+									"key": "dutyId",
+									"value": "75d1d021-b549-4a23-bb3b-2133bf444f37"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetDutyById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/duty/:dutyId",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"duty",
+								":dutyId"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": "25929b0c-b2f3-4bf4-966e-7d5782d549c8"
+								},
+								{
+									"key": "dutyId",
+									"value": "45b7644b-db20-48d6-9cc2-16531aa39c00"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "NewGrading",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tutor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"\",\r\n    \"gradingId\": \"\",\r\n    \"points\": 100,\r\n    \"gradingComment\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/create/grade",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"create",
+								"grade"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteDuty",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/duty/:dutyId",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"duty",
+								":dutyId"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								},
+								{
+									"key": "dutyId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMyGradingByDutyId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/duty/:dutyId/my-grading",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"duty",
+								":dutyId",
+								"my-grading"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								},
+								{
+									"key": "dutyId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteFamily",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SubmitDuty",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{seap_host}}:{{seap_port}}/api/my/family/:famId/duty/:dutyId/submit/:gradingId/done",
+							"host": [
+								"{{seap_host}}"
+							],
+							"port": "{{seap_port}}",
+							"path": [
+								"api",
+								"my",
+								"family",
+								":famId",
+								"duty",
+								":dutyId",
+								"submit",
+								":gradingId",
+								"done"
+							],
+							"variable": [
+								{
+									"key": "famId",
+									"value": ""
+								},
+								{
+									"key": "dutyId",
+									"value": ""
+								},
+								{
+									"key": "gradingId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
