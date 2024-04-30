@@ -59,7 +59,7 @@ func familyTutorRoutes() {
 
 	familyTutor.DELETE("/family/:famId", controller.DeleteFamily())
 	familyTutor.DELETE("/family/:famId/duty/:dutyId", controller.DeleteDuty())
-	//familyTutor.POST("/execute/duty", controller.TriggerExecution()) // dutyId
+	familyTutor.POST("/execute/family/:famId/duty/:dutyId", controller.TriggerExecution()) // dutyId
 }
 
 func familyMemberRoutes() {

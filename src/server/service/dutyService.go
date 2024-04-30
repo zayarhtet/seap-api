@@ -28,6 +28,8 @@ type DutyService interface {
 	DeleteDutyResponse(string) (dto.Response, error)
 
 	GetMyGradingResponse(string, string) (dto.Response, error)
+
+	ExecutePlugin(string) (dto.Response, error)
 }
 
 type dutyServiceImpl struct {
@@ -359,6 +361,10 @@ func (ds dutyServiceImpl) GetMyGradingResponse(dutyId string, username string) (
 		return BeforeErrorResponse(PrepareErrorMap(400, err.Error())), err
 	}
 	return BeforeDataResponse[dao.Grading](&[]dao.Grading{*grading}, 1), nil
+}
+
+func (ds dutyServiceImpl) ExecutePlugin(dutyId string) (dto.Response, error) {
+	return "EXECUTING", nil
 }
 
 func NewDutyService() DutyService {

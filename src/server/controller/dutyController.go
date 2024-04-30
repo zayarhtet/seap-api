@@ -19,6 +19,7 @@ type DutyController interface {
 	submitDuty(*gin.Context)
 	deleteDuty(*gin.Context)
 	getMyGrading(*gin.Context)
+	triggerPluginExecution(*gin.Context)
 }
 
 type dutyControllerImpl struct {
@@ -101,6 +102,20 @@ func (dc *dutyControllerImpl) getMyGrading(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, resp)
+}
+
+func (dc *dutyControllerImpl) triggerPluginExecution(context *gin.Context) {
+	dutyId := context.Param("dutyId")
+	resp, err := dc.ds.ExecutePlugin(dutyId)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, resp)
+}
+
+func TriggerExecution() gin.HandlerFunc {
+	return dutyControllerObj.triggerPluginExecution
 }
 
 func GetAllDuties() gin.HandlerFunc {
