@@ -30,6 +30,7 @@ type DutyService interface {
 	GetMyGradingResponse(string, string) (dto.Response, error)
 
 	ExecutePlugin(string) (dto.Response, error)
+	GetReportPath(string) (string, error)
 }
 
 type dutyServiceImpl struct {
@@ -365,6 +366,10 @@ func (ds dutyServiceImpl) GetMyGradingResponse(dutyId string, username string) (
 
 func (ds dutyServiceImpl) ExecutePlugin(dutyId string) (dto.Response, error) {
 	return "EXECUTING", nil
+}
+
+func (ds dutyServiceImpl) GetReportPath(dutyId string) (string, error) {
+	return util.GetFamilyIconAbsolutePath("mybear.jpg"), nil
 }
 
 func NewDutyService() DutyService {
