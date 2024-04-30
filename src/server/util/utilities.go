@@ -228,3 +228,22 @@ func FileExists(filePath string) bool {
 	}
 	return true
 }
+
+// RemoveElementsInPlace Function to remove elements from a slice based on a condition in place
+func RemoveElementsInPlace[T any](slice *[]T, condition func(T) bool) {
+	// Initialize the index for the elements to keep
+	newIndex := 0
+
+	// Iterate over the slice
+	for _, item := range *slice {
+		// Check if the element satisfies the condition
+		if condition(item) {
+			// If it does, move it to the new index
+			(*slice)[newIndex] = item
+			newIndex++
+		}
+	}
+
+	// Update the slice length to remove the excess elements
+	*slice = (*slice)[:newIndex]
+}

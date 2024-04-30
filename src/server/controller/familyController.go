@@ -85,18 +85,19 @@ func (fc *familyControllerImpl) saveNewFamily(context *gin.Context) {
 }
 
 func (fc *familyControllerImpl) addNewMemberToFamily(context *gin.Context) {
-	idRaw := context.MustGet("username").(string)
+	famId := context.Param("famId")
 	var input dto.MemberToFamilyRequest
 
 	if err := context.ShouldBindJSON(&input); err != nil {
 		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, "Invalid Input")))
 		return
 	}
-	isTutor, err := fc.fs.IsTutorInFamily(idRaw, input.FamilyId)
-	if err != nil || !isTutor {
-		context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "You are not a tutor of this family.")))
-		return
-	}
+	//isTutor, err := fc.fs.IsTutorInFamily(idRaw, famId)
+	//if err != nil || !isTutor {
+	//	context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "You are not a tutor of this family.")))
+	//	return
+	//}
+	input.FamilyId = famId
 	family, err := fc.fs.AddMemberToFamily(input)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, family)

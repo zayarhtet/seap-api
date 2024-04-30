@@ -59,9 +59,13 @@ func (ds dutyServiceImpl) GetAllDutiesResponse(size, page int) (dto.Response, er
 func (ds dutyServiceImpl) GetAllDutiesByMemberResponse(username string) (dto.Response, error) {
 	var data *dao.MyDuty = &dao.MyDuty{Username: username}
 
-	err := ds.dr.GetDutiesByUsername(data)
+	duties := ds.dr.GetDutiesByUsername(data)
 
-	newResp := BeforeDataResponse[dao.MyDuty](err, 1)
+	util.RemoveElementsInPlace[dao.MyDuty](duties, func(duty dao.MyDuty) bool {
+		return time.Now().After(duty.Duty_.PublishingDate)
+	})
+
+	newResp := BeforeDataResponse[dao.MyDuty](duties, 1)
 	return newResp, nil
 }
 

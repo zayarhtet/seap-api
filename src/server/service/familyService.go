@@ -122,6 +122,9 @@ func (fs familyServiceImpl) GetFamilyByIdWithDuties(familyId string, username st
 	var err error
 	if role == "tutee" {
 		err = fs.fr.GetFamilyByIdWithDutiesForTutee(member, username)
+		util.RemoveElementsInPlace[dao.GradingForFamily](&(member.DutiesWithSubmission), func(grading dao.GradingForFamily) bool {
+			return time.Now().After(grading.Duty_.PublishingDate)
+		})
 	} else {
 		err = fs.fr.GetFamilyByIdWithDutiesForTutor(member)
 	}
