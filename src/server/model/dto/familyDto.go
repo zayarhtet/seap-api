@@ -12,6 +12,6 @@ func (MemberToFamilyRequest) TableName() string {
 
 type NewFamilyRequest struct {
 	FamilyName string `json:"familyName" binding:"required"`
-	FamilyInfo string `json:"familyInfo" binding:"required"`
+	FamilyInfo string `json:"familyInfo"`
 	FamilyIcon string `json:"icon"`
 }

@@ -59,9 +59,9 @@ func familyTutorRoutes() {
 
 	familyTutor.DELETE("/family/:famId", controller.DeleteFamily())
 	familyTutor.DELETE("/family/:famId/duty/:dutyId", controller.DeleteDuty())
-	familyTutor.POST("/execute/family/:famId/duty/:dutyId", controller.TriggerExecution())        // dutyId
-	familyTutor.GET("cdn/download/family/:famId/duty/:dutyId/report", controller.GetDutyReport()) // dutyId
-
+	familyTutor.POST("/execute/family/:famId/duty/:dutyId", controller.TriggerExecution()) // dutyId
+	//familyTutor.GET("cdn/download/family/:famId/duty/:dutyId/report", controller.GetDutyReport()) // dutyId
+	familyTutor.GET("cdn/html/family/:famId/grading/:gradingId/report", controller.GetDutyReport())
 }
 
 func familyMemberRoutes() {

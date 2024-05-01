@@ -69,7 +69,7 @@ func (fc *familyControllerImpl) saveNewFamily(context *gin.Context) {
 	var familyName string = context.PostForm("familyName")
 	var familyInfo string = context.PostForm("familyInfo")
 
-	if len(familyName) == 0 || len(familyInfo) == 0 {
+	if len(familyName) == 0 {
 		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, "Invalid Input")))
 		return
 	}

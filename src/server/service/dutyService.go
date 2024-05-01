@@ -3,6 +3,8 @@ package service
 import (
 	"errors"
 	"mime/multipart"
+	"os"
+	"path"
 	"time"
 
 	"github.com/zayarhtet/seap-api/src/server/model/dao"
@@ -30,7 +32,7 @@ type DutyService interface {
 	GetMyGradingResponse(string, string) (dto.Response, error)
 
 	ExecutePlugin(string) (dto.Response, error)
-	GetReportPath(string) (string, error)
+	GetReportContent(string) (string, error)
 }
 
 type dutyServiceImpl struct {
@@ -209,8 +211,18 @@ func (ds dutyServiceImpl) UploadSubmittedFiles(files []*multipart.FileHeader, du
 		Username: username,
 	}
 	err = ds.dr.GetGradingByStructCondition(grading, grading)
-	if err != nil || grading.Submitted {
+	if err != nil {
 		return BeforeErrorResponse(PrepareErrorMap(404, "record not found.")), err
+	}
+
+	if grading.Submitted {
+		var subFile *dao.SubmittedFile = &dao.SubmittedFile{
+			GradingId: grading.GradingId,
+		}
+
+		allFiles := ds.dr.GetAllSubmittedFilesMetadata(subFile)
+
+		return BeforeDataResponse[dao.SubmittedFile](allFiles, 1), nil
 	}
 
 	result, err := util.SaveSubmittedFiles(files, dutyId, username)
@@ -349,6 +361,14 @@ func (ds dutyServiceImpl) DeleteDutyResponse(dutyId string) (dto.Response, error
 	if err != nil {
 		return "", err
 	}
+	err = util.DeleteDirectory(path.Join(util.ABSOLUTE_GIVEN_STORAGE_PATH, dutyId))
+	if err != nil {
+		return nil, err
+	}
+	err = util.DeleteDirectory(path.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH, dutyId))
+	if err != nil {
+		return nil, err
+	}
 	return "success", nil
 }
 
@@ -368,8 +388,26 @@ func (ds dutyServiceImpl) ExecutePlugin(dutyId string) (dto.Response, error) {
 	return "EXECUTING", nil
 }
 
-func (ds dutyServiceImpl) GetReportPath(dutyId string) (string, error) {
-	return util.GetFamilyIconAbsolutePath("mybear.jpg"), nil
+func (ds dutyServiceImpl) GetReportContent(gradingId string) (string, error) {
+	var grading *dao.Grading = &dao.Grading{
+		GradingId: gradingId,
+	}
+	err := ds.dr.GetGradingByStructCondition(grading, grading)
+	if err != nil {
+		return "", err
+	}
+
+	reportPath := util.GetIndividualDutyReport(grading.ReportPath, grading.Username, grading.DutyId)
+
+	if len(reportPath) == 0 {
+		return "", nil
+	}
+
+	htmlContent, err := os.ReadFile(reportPath)
+	if err != nil {
+		return "", err
+	}
+	return string(htmlContent), nil
 }
 
 func NewDutyService() DutyService {

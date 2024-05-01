@@ -99,6 +99,7 @@ const ABSOLUTE_STORAGE_PATH = "/home/zayar/seap_storage/"
 const ABSOLUTE_ICONS_PATH = ABSOLUTE_STORAGE_PATH + "family-icons/"
 const ABSOLUTE_GIVEN_STORAGE_PATH = ABSOLUTE_STORAGE_PATH + "given-files/"
 const ABSOLUTE_SUBMITTED_STORAGE_PATH = ABSOLUTE_STORAGE_PATH + "submitted-files/"
+const ABSOLUTE_REPORT_STORAGE_PATH = ABSOLUTE_STORAGE_PATH + "report-files/"
 
 func SaveIcons(fileHeader *multipart.FileHeader, id string) error {
 	return SaveFile(fileHeader, filepath.Join(ABSOLUTE_ICONS_PATH, id))
@@ -208,12 +209,28 @@ func GetSubmittedFileAbsolutePath(dutyId, username, fileName string) string {
 	return ""
 }
 
+func GetIndividualDutyReport(fileName string, username, dutyId string) string {
+	absFilePath := filepath.Join(ABSOLUTE_REPORT_STORAGE_PATH, dutyId, username, fileName)
+	if FileExists(absFilePath) {
+		return absFilePath
+	}
+	return ""
+}
+
 func DeleteFile(filePath string) error {
 	if FileExists(filePath) {
 		err := os.Remove(filePath)
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func DeleteDirectory(absDirPath string) error {
+	err := os.RemoveAll(absDirPath)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -229,21 +246,13 @@ func FileExists(filePath string) bool {
 	return true
 }
 
-// RemoveElementsInPlace Function to remove elements from a slice based on a condition in place
 func RemoveElementsInPlace[T any](slice *[]T, condition func(T) bool) {
-	// Initialize the index for the elements to keep
 	newIndex := 0
-
-	// Iterate over the slice
 	for _, item := range *slice {
-		// Check if the element satisfies the condition
 		if condition(item) {
-			// If it does, move it to the new index
 			(*slice)[newIndex] = item
 			newIndex++
 		}
 	}
-
-	// Update the slice length to remove the excess elements
 	*slice = (*slice)[:newIndex]
 }

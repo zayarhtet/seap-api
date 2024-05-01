@@ -14,6 +14,7 @@ type Grading struct {
 	HasGraded        bool            `json:"hasGraded"`
 	GradeComment     string          `json:"gradeComment"`
 	ExecutionComment string          `json:"executionComment"`
+	ReportPath       string          `json:"-"`
 	Files            []SubmittedFile `gorm:"foreignKey:GradingId" json:"files"`
 }
 

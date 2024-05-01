@@ -20,7 +20,7 @@ type DutyController interface {
 	deleteDuty(*gin.Context)
 	getMyGrading(*gin.Context)
 	triggerPluginExecution(*gin.Context)
-	getReportFile(*gin.Context)
+	getStaticReport(*gin.Context)
 }
 
 type dutyControllerImpl struct {
@@ -114,14 +114,14 @@ func (dc *dutyControllerImpl) triggerPluginExecution(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, resp)
 }
-func (dc *dutyControllerImpl) getReportFile(context *gin.Context) {
-	dutyId := context.Param("dutyId")
-	filepath, err := dc.ds.GetReportPath(dutyId)
+func (dc *dutyControllerImpl) getStaticReport(context *gin.Context) {
+	gradingId := context.Param("gradingId")
+	content, err := dc.ds.GetReportContent(gradingId)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	context.File(filepath)
+	context.String(http.StatusOK, content)
 }
 
 func TriggerExecution() gin.HandlerFunc {
@@ -161,5 +161,5 @@ func GetMyGradingDetail() gin.HandlerFunc {
 }
 
 func GetDutyReport() gin.HandlerFunc {
-	return dutyControllerObj.getReportFile
+	return dutyControllerObj.getStaticReport
 }
