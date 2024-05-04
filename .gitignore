@@ -2,3 +2,4 @@
 seap-api
 !.env-sample
 .idea/*
+.so

@@ -1,3 +1,5 @@
+//go:build !plugin
+
 package main
 
 import (
@@ -14,5 +16,4 @@ func main() {
 	config.InitDataCenter()
 	config.InitController()
 	config.InitRouter()
-
 }
