@@ -9,7 +9,7 @@ import (
 )
 
 type FpClean struct {
-	lib.PluginCommonLibrary
+	lib.SeePluginCommonLibrary
 }
 
 func NewPlugin() lib.Plugin {
