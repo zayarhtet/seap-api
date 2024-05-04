@@ -18,6 +18,7 @@ type Duty struct {
 	PointSystem        bool          `json:"isPointSystem"`
 	PossiblePoints     int           `json:"totalPoints"`
 	MultipleSubmission bool          `json:"multipleSubmission"`
+	PluginName         string        `json:"pluginName"`
 	Files              []GivenFile   `gorm:"foreignKey:DutyId" json:"files"`
 }
 
@@ -44,6 +45,7 @@ type DutiesForFamily struct {
 	DeadlineDate   time.Time `json:"dueDate"`
 	ClosingDate    time.Time `json:"closingDate"`
 	FamilyId       string    `json:"-"`
+	PluginName     string    `json:"pluginName"`
 }
 
 func (DutiesForFamily) TableName() string {

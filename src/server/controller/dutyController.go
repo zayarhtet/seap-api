@@ -25,6 +25,7 @@ type DutyController interface {
 
 type dutyControllerImpl struct {
 	ds service.DutyService
+	es service.EngineService
 }
 
 var dutyControllerObj DutyController
@@ -33,7 +34,7 @@ func initDuty() {
 	if dutyControllerObj != nil {
 		return
 	}
-	dutyControllerObj = &dutyControllerImpl{ds: service.NewDutyService()}
+	dutyControllerObj = &dutyControllerImpl{ds: service.NewDutyService(), es: service.NewEngineService()}
 }
 
 func (dc *dutyControllerImpl) getAllDuties(context *gin.Context) {
@@ -107,7 +108,7 @@ func (dc *dutyControllerImpl) getMyGrading(context *gin.Context) {
 
 func (dc *dutyControllerImpl) triggerPluginExecution(context *gin.Context) {
 	dutyId := context.Param("dutyId")
-	resp, err := dc.ds.ExecutePlugin(dutyId)
+	resp, err := dc.es.ExecuteSubmittedFile(dutyId)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

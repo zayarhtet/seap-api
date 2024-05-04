@@ -225,6 +225,7 @@ describe grading;
 alter table grading drop primary key;
 
 alter table grading drop constraint FK_grading_member;
+alter table grading drop constraint FK_grading_duty;
 alter table grading add constraint FK_grading_member FOREIGN KEY (username)
     REFERENCES member(username) on delete cascade;
 alter table grading drop constraint FK_grading_family;
@@ -232,7 +233,7 @@ alter table grading add constraint FK_grading_family FOREIGN KEY (family_id)
     REFERENCES family(family_id) on delete cascade;
 alter table grading drop constraint FK_grading_duty;
 alter table grading add constraint FK_grading_duty foreign key (duty_id)
-    references duty(duty_id);
+    references duty(duty_id) on delete cascade;
 
 alter table grading add column grading_id varchar(255) primary key not null;
 
@@ -418,4 +419,8 @@ describe given_file;
 file_table (file_id, path)
 given_file_table (dutyId, file_id)
 submitted_file_table (grading_id, file_id, submitted_at)
-member (member_id, file_id)
+member (member_id, file_id);
+
+alter table grading rename column hasGraded to has_graded;
+
+DELETE FROM `duty` WHERE `duty`.`duty_id` = 'ff1bff55-f8cc-4316-b046-7f6d2d05f68f';
