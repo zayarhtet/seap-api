@@ -30,7 +30,6 @@ func ExecuteDuty(pluginName, dutyDir string) error {
 	close(inputFileCh)
 
 	maxThreads := runtime.NumCPU() - 2
-	fmt.Println(maxThreads)
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 

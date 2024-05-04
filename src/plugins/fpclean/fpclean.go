@@ -9,7 +9,7 @@ import (
 )
 
 type FpClean struct {
-	dir string
+	lib.PluginCommonLibrary
 }
 
 func NewPlugin() lib.Plugin {
@@ -18,13 +18,15 @@ func NewPlugin() lib.Plugin {
 
 func (p *FpClean) Initialize(userDir string) (string, error) {
 	// Plugin initialization
-	p.dir = userDir
+	p.SetDir(userDir)
+	p.AddMemoryFile("HELLO")
+
 	return "", nil
 }
 
 func (p *FpClean) Execute() error {
 	// Plugin execution
-	fmt.Println("Executing plugin..." + p.dir)
+	fmt.Println("Executing plugin..." + p.GetDir())
 	return nil
 }
 
