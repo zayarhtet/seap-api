@@ -89,3 +89,12 @@ func GetNewPlugin(name string) (lib.Plugin, error) {
 	}
 	return plugin(), nil
 }
+
+func GetPluginList() *[]string {
+	var keys []string
+
+	for k := range plugins {
+		keys = append(keys, k)
+	}
+	return &keys
+}

@@ -21,6 +21,7 @@ type DutyController interface {
 	getMyGrading(*gin.Context)
 	triggerPluginExecution(*gin.Context)
 	getStaticReport(*gin.Context)
+	getPluginList(*gin.Context)
 }
 
 type dutyControllerImpl struct {
@@ -125,6 +126,15 @@ func (dc *dutyControllerImpl) getStaticReport(context *gin.Context) {
 	context.String(http.StatusOK, content)
 }
 
+func (dc *dutyControllerImpl) getPluginList(context *gin.Context) {
+	content, err := dc.es.GetPluginListResponse()
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, content)
+}
+
 func TriggerExecution() gin.HandlerFunc {
 	return dutyControllerObj.triggerPluginExecution
 }
@@ -163,4 +173,8 @@ func GetMyGradingDetail() gin.HandlerFunc {
 
 func GetDutyReport() gin.HandlerFunc {
 	return dutyControllerObj.getStaticReport
+}
+
+func GetPluginList() gin.HandlerFunc {
+	return dutyControllerObj.getPluginList
 }

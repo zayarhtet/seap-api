@@ -100,6 +100,7 @@ func ABSOLUTE_ICONS_PATH() string             { return ABSOLUTE_STORAGE_PATH() +
 func ABSOLUTE_GIVEN_STORAGE_PATH() string     { return ABSOLUTE_STORAGE_PATH() + "given-files/" }
 func ABSOLUTE_SUBMITTED_STORAGE_PATH() string { return ABSOLUTE_STORAGE_PATH() + "submitted-files/" }
 func ABSOLUTE_REPORT_STORAGE_PATH() string    { return ABSOLUTE_STORAGE_PATH() + "report-files/" }
+func ABSOLUTE_INPUT_FILE_PATH() string        { return ABSOLUTE_STORAGE_PATH() + "input-files/" }
 
 func SaveIcons(fileHeader *multipart.FileHeader, id string) error {
 	return SaveFile(fileHeader, filepath.Join(ABSOLUTE_ICONS_PATH(), id))
@@ -123,6 +124,15 @@ func SaveGivenFiles(fileHeaders []*multipart.FileHeader, id string) (map[string]
 		return map[string]string{}, nil
 	}
 	filePath := filepath.Join(ABSOLUTE_GIVEN_STORAGE_PATH(), id)
+	createDirectoryIfNotExist(filePath)
+	return SaveFiles(fileHeaders, filePath)
+}
+
+func SaveInputFiles(fileHeaders []*multipart.FileHeader, id string) (map[string]string, error) {
+	if len(fileHeaders) == 0 {
+		return map[string]string{}, nil
+	}
+	filePath := filepath.Join(ABSOLUTE_INPUT_FILE_PATH(), id)
 	createDirectoryIfNotExist(filePath)
 	return SaveFiles(fileHeaders, filePath)
 }

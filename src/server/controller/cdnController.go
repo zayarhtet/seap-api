@@ -54,7 +54,15 @@ func (cc *CDNControllerImpl) saveGivenFiles(context *gin.Context) {
 
 	files := context.Request.MultipartForm.File["files"] // Assuming files are uploaded with key "files"
 
+	inputFiles := context.Request.MultipartForm.File["input-files"]
+
 	err = cc.ds.CreateGivenFiles(files, dutyId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create assignment and upload files"})
+		return
+	}
+
+	err = cc.ds.SaveInputFiles(inputFiles, dutyId)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create assignment and upload files"})
 		return

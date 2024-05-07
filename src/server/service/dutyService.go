@@ -32,6 +32,8 @@ type DutyService interface {
 	GetMyGradingResponse(string, string) (dto.Response, error)
 
 	GetReportContent(string) (string, error)
+
+	SaveInputFiles([]*multipart.FileHeader, string) error
 }
 
 type dutyServiceImpl struct {
@@ -392,10 +394,10 @@ func (ds dutyServiceImpl) GetReportContent(gradingId string) (string, error) {
 		return "", err
 	}
 
-	reportPath := util.GetIndividualDutyReport(grading.ReportPath, grading.Username, grading.DutyId)
+	reportPath := util.GetIndividualDutyReport("log.html", grading.Username, grading.DutyId)
 
 	if len(reportPath) == 0 {
-		return "", nil
+		return "hello", nil
 	}
 
 	htmlContent, err := os.ReadFile(reportPath)
@@ -403,6 +405,11 @@ func (ds dutyServiceImpl) GetReportContent(gradingId string) (string, error) {
 		return "", err
 	}
 	return string(htmlContent), nil
+}
+
+func (ds dutyServiceImpl) SaveInputFiles(headers []*multipart.FileHeader, dutyId string) error {
+	_, err := util.SaveInputFiles(headers, dutyId)
+	return err
 }
 
 func NewDutyService() DutyService {

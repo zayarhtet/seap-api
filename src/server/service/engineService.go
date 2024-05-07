@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/zayarhtet/seap-api/src/engine"
+	"github.com/zayarhtet/seap-api/src/server/model/dao"
 	"github.com/zayarhtet/seap-api/src/server/model/dto"
 	"github.com/zayarhtet/seap-api/src/server/repository"
 	"github.com/zayarhtet/seap-api/src/util"
@@ -11,6 +12,7 @@ import (
 
 type EngineService interface {
 	ExecuteSubmittedFile(string) (dto.Response, error)
+	GetPluginListResponse() (dto.Response, error)
 }
 
 type engineServiceImpl struct {
@@ -19,8 +21,20 @@ type engineServiceImpl struct {
 }
 
 func (es engineServiceImpl) ExecuteSubmittedFile(dutyId string) (dto.Response, error) {
-	go engine.ExecuteDuty("fpclean", filepath.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH(), "78910bfe-8d3a-47a2-bdb3-5b2b54bd489c"))
+	var duty *dao.Duty = &dao.Duty{
+		DutyId: dutyId,
+	}
+	err := es.dr.GetDutyById(duty)
+	if err != nil {
+		return BeforeErrorResponse(PrepareErrorMap(404, "record not found.")), err
+	}
+	go engine.ExecuteDuty("fpclean", filepath.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH(), dutyId), filepath.Join(util.ABSOLUTE_INPUT_FILE_PATH(), dutyId))
 	return "EXECUTING", nil
+}
+
+func (es engineServiceImpl) GetPluginListResponse() (dto.Response, error) {
+	plugins := engine.GetPluginList()
+	return BeforeDataResponse[string](plugins, 1), nil
 }
 
 func NewEngineService() EngineService {

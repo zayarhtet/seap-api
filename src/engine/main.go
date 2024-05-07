@@ -6,13 +6,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
-
-	"github.com/zayarhtet/seap-api/src/util"
 )
 
 const RELATIVE_PLUGINS_PATH = "src/plugins"
-
-func ABSOLUTE_INPUT_FILE_PATH() string { return util.ABSOLUTE_STORAGE_PATH() + "input-files/" }
 
 func Init() {
 	if err := DiscoverAndRegisterPlugins(RELATIVE_PLUGINS_PATH); err != nil {
@@ -21,7 +17,7 @@ func Init() {
 	}
 }
 
-func ExecuteDuty(pluginName, dutyDir string) error {
+func ExecuteDuty(pluginName, dutyDir, pluginInputDir string) error {
 	entries, err := os.ReadDir(dutyDir)
 	if err != nil {
 		return err
@@ -41,7 +37,7 @@ func ExecuteDuty(pluginName, dutyDir string) error {
 
 	for i := 0; i < maxThreads; i++ {
 		wg.Add(1)
-		go Worker(inputFileCh, pluginName, &wg, &mu)
+		go Worker(inputFileCh, pluginName, pluginInputDir, &wg, &mu)
 	}
 
 	wg.Wait()
@@ -50,12 +46,18 @@ func ExecuteDuty(pluginName, dutyDir string) error {
 	return nil
 }
 
-func Worker(inputFileCh <-chan string, pluginName string, wg *sync.WaitGroup, mu *sync.Mutex) {
+func Worker(inputFileCh <-chan string, pluginName, pluginInputDir string, wg *sync.WaitGroup, mu *sync.Mutex) {
 	defer wg.Done()
 	for inputFile := range inputFileCh {
 		newPlugin, _ := GetNewPlugin(pluginName)
-		newPlugin.Initialize(inputFile)
-		newPlugin.Execute()
+		err := newPlugin.Initialize(pluginInputDir)
+		if err != nil {
+			continue
+		}
+		err = newPlugin.Execute(inputFile)
+		if err != nil {
+			continue
+		}
 		mu.Lock()
 		fmt.Printf("Finished executing %s with input file: %s\n", pluginName, inputFile)
 		mu.Unlock()
