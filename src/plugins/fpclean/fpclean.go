@@ -9,19 +9,19 @@ import (
 )
 
 type FpClean struct {
-	lib.SeePluginCommonLibrary
+	lib.SeePluginStandardLibrary
 }
 
 func NewPlugin() lib.Plugin {
 	return &FpClean{}
 }
 
-func (p *FpClean) Initialize(userDir string) (string, error) {
+func (p *FpClean) Initialize(userDir string) error {
 	// Plugin initialization
 	p.SetDir(userDir)
 	p.AddMemoryFile("HELLO")
 
-	return "", nil
+	return nil
 }
 
 func (p *FpClean) Execute() error {

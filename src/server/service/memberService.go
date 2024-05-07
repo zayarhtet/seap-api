@@ -5,7 +5,7 @@ import (
 	"github.com/zayarhtet/seap-api/src/server/model/dao"
 	"github.com/zayarhtet/seap-api/src/server/model/dto"
 	"github.com/zayarhtet/seap-api/src/server/repository"
-	"github.com/zayarhtet/seap-api/src/server/util"
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
 type MemberService interface {

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/zayarhtet/seap-api/src/server/util"
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
 type SubmittedFile struct {

@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/zayarhtet/seap-api/src/server/util"
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
 type Response interface{}

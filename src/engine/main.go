@@ -6,10 +6,16 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
+
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
+const RELATIVE_PLUGINS_PATH = "src/plugins"
+
+func ABSOLUTE_INPUT_FILE_PATH() string { return util.ABSOLUTE_STORAGE_PATH() + "input-files/" }
+
 func Init() {
-	if err := DiscoverAndRegisterPlugins("src/plugins"); err != nil {
+	if err := DiscoverAndRegisterPlugins(RELATIVE_PLUGINS_PATH); err != nil {
 		fmt.Println(err.Error())
 		panic(err)
 	}

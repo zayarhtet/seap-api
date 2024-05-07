@@ -95,14 +95,14 @@ func isSupportedImageExtension(extension string) bool {
 	return supportedExtensions[extension]
 }
 
-const ABSOLUTE_STORAGE_PATH = "/home/zayar/seap_storage/"
-const ABSOLUTE_ICONS_PATH = ABSOLUTE_STORAGE_PATH + "family-icons/"
-const ABSOLUTE_GIVEN_STORAGE_PATH = ABSOLUTE_STORAGE_PATH + "given-files/"
-const ABSOLUTE_SUBMITTED_STORAGE_PATH = ABSOLUTE_STORAGE_PATH + "submitted-files/"
-const ABSOLUTE_REPORT_STORAGE_PATH = ABSOLUTE_STORAGE_PATH + "report-files/"
+func ABSOLUTE_STORAGE_PATH() string           { return os.Getenv("STORAGE_PATH") }
+func ABSOLUTE_ICONS_PATH() string             { return ABSOLUTE_STORAGE_PATH() + "family-icons/" }
+func ABSOLUTE_GIVEN_STORAGE_PATH() string     { return ABSOLUTE_STORAGE_PATH() + "given-files/" }
+func ABSOLUTE_SUBMITTED_STORAGE_PATH() string { return ABSOLUTE_STORAGE_PATH() + "submitted-files/" }
+func ABSOLUTE_REPORT_STORAGE_PATH() string    { return ABSOLUTE_STORAGE_PATH() + "report-files/" }
 
 func SaveIcons(fileHeader *multipart.FileHeader, id string) error {
-	return SaveFile(fileHeader, filepath.Join(ABSOLUTE_ICONS_PATH, id))
+	return SaveFile(fileHeader, filepath.Join(ABSOLUTE_ICONS_PATH(), id))
 }
 
 func createDirectoryIfNotExist(dirPath string) error {
@@ -122,7 +122,7 @@ func SaveGivenFiles(fileHeaders []*multipart.FileHeader, id string) (map[string]
 	if len(fileHeaders) == 0 {
 		return map[string]string{}, nil
 	}
-	filePath := filepath.Join(ABSOLUTE_GIVEN_STORAGE_PATH, id)
+	filePath := filepath.Join(ABSOLUTE_GIVEN_STORAGE_PATH(), id)
 	createDirectoryIfNotExist(filePath)
 	return SaveFiles(fileHeaders, filePath)
 }
@@ -131,7 +131,7 @@ func SaveSubmittedFiles(fileHeaders []*multipart.FileHeader, dutyId, username st
 	if len(fileHeaders) == 0 {
 		return map[string]string{}, nil
 	}
-	filePath := filepath.Join(ABSOLUTE_SUBMITTED_STORAGE_PATH, dutyId, username)
+	filePath := filepath.Join(ABSOLUTE_SUBMITTED_STORAGE_PATH(), dutyId, username)
 	createDirectoryIfNotExist(filePath)
 	return SaveFiles(fileHeaders, filePath)
 }
@@ -186,7 +186,10 @@ func SaveFile(fileHeader *multipart.FileHeader, filePath string) error {
 }
 
 func GetFamilyIconAbsolutePath(fileName string) string {
-	absFilePath := filepath.Join(ABSOLUTE_ICONS_PATH, fileName)
+	if len(fileName) == 0 {
+		return ""
+	}
+	absFilePath := filepath.Join(ABSOLUTE_ICONS_PATH(), fileName)
 	if FileExists(absFilePath) {
 		return absFilePath
 	}
@@ -194,7 +197,10 @@ func GetFamilyIconAbsolutePath(fileName string) string {
 }
 
 func GetGivenFileAbsolutePath(fileName string, dutyId string) string {
-	absFilePath := filepath.Join(ABSOLUTE_GIVEN_STORAGE_PATH, dutyId, fileName)
+	if len(fileName) == 0 || len(dutyId) == 0 {
+		return ""
+	}
+	absFilePath := filepath.Join(ABSOLUTE_GIVEN_STORAGE_PATH(), dutyId, fileName)
 	if FileExists(absFilePath) {
 		return absFilePath
 	}
@@ -202,7 +208,10 @@ func GetGivenFileAbsolutePath(fileName string, dutyId string) string {
 }
 
 func GetSubmittedFileAbsolutePath(dutyId, username, fileName string) string {
-	absFilePath := filepath.Join(ABSOLUTE_SUBMITTED_STORAGE_PATH, dutyId, username, fileName)
+	if len(fileName) == 0 || len(dutyId) == 0 {
+		return ""
+	}
+	absFilePath := filepath.Join(ABSOLUTE_SUBMITTED_STORAGE_PATH(), dutyId, username, fileName)
 	if FileExists(absFilePath) {
 		return absFilePath
 	}
@@ -210,7 +219,10 @@ func GetSubmittedFileAbsolutePath(dutyId, username, fileName string) string {
 }
 
 func GetIndividualDutyReport(fileName string, username, dutyId string) string {
-	absFilePath := filepath.Join(ABSOLUTE_REPORT_STORAGE_PATH, dutyId, username, fileName)
+	if len(fileName) == 0 || len(dutyId) == 0 {
+		return ""
+	}
+	absFilePath := filepath.Join(ABSOLUTE_REPORT_STORAGE_PATH(), dutyId, username, fileName)
 	if FileExists(absFilePath) {
 		return absFilePath
 	}

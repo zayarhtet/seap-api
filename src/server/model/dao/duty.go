@@ -3,7 +3,7 @@ package dao
 import (
 	"time"
 
-	"github.com/zayarhtet/seap-api/src/server/util"
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
 type Duty struct {

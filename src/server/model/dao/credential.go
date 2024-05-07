@@ -1,9 +1,11 @@
 package dao
 
-import "github.com/zayarhtet/seap-api/src/server/util"
+import (
+	"github.com/zayarhtet/seap-api/src/util"
+)
 
 type Credential struct {
-	CredentialId string `gorm:"primary_key"" json:"credentialId"`
+	CredentialId string `gorm:"primary_key" json:"credentialId"`
 	Password     string `json:"password"`
 }
 

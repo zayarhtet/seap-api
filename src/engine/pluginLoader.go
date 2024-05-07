@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/zayarhtet/seap-api/src/plugins/lib"
-	"github.com/zayarhtet/seap-api/src/server/util"
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
 var (

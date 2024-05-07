@@ -10,7 +10,7 @@ import (
 	"github.com/zayarhtet/seap-api/src/server/model/dao"
 	"github.com/zayarhtet/seap-api/src/server/model/dto"
 	"github.com/zayarhtet/seap-api/src/server/repository"
-	"github.com/zayarhtet/seap-api/src/server/util"
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
 type DutyService interface {
@@ -360,11 +360,11 @@ func (ds dutyServiceImpl) DeleteDutyResponse(dutyId string) (dto.Response, error
 	if err != nil {
 		return "", err
 	}
-	err = util.DeleteDirectory(path.Join(util.ABSOLUTE_GIVEN_STORAGE_PATH, dutyId))
+	err = util.DeleteDirectory(path.Join(util.ABSOLUTE_GIVEN_STORAGE_PATH(), dutyId))
 	if err != nil {
 		return nil, err
 	}
-	err = util.DeleteDirectory(path.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH, dutyId))
+	err = util.DeleteDirectory(path.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH(), dutyId))
 	if err != nil {
 		return nil, err
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/zayarhtet/seap-api/src/engine"
 	"github.com/zayarhtet/seap-api/src/server/model/dto"
 	"github.com/zayarhtet/seap-api/src/server/repository"
-	"github.com/zayarhtet/seap-api/src/server/util"
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
 type EngineService interface {
@@ -19,7 +19,7 @@ type engineServiceImpl struct {
 }
 
 func (es engineServiceImpl) ExecuteSubmittedFile(dutyId string) (dto.Response, error) {
-	go engine.ExecuteDuty("fpclean", filepath.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH, "78910bfe-8d3a-47a2-bdb3-5b2b54bd489c"))
+	go engine.ExecuteDuty("fpclean", filepath.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH(), "78910bfe-8d3a-47a2-bdb3-5b2b54bd489c"))
 	return "EXECUTING", nil
 }
 
