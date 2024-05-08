@@ -248,10 +248,10 @@ func (fs familyServiceImpl) IsTutorInFamily(username, familyId string) (bool, er
 }
 
 func (fs familyServiceImpl) GetFamilyProfileImagePath(famId string) (string, error) {
-	var member *dao.FamilyWithMembers = &dao.FamilyWithMembers{
+	var member *dao.Family = &dao.Family{
 		FamilyId: famId,
 	}
-	err := fs.fr.GetFamilyById(member)
+	err := fs.fr.GetFamilyOnlyById(member)
 	if err != nil {
 		return "", err
 	}

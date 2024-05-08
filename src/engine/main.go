@@ -48,18 +48,18 @@ func ExecuteDuty(pluginName, dutyDir, pluginInputDir string) error {
 
 func Worker(inputFileCh <-chan string, pluginName, pluginInputDir string, wg *sync.WaitGroup, mu *sync.Mutex) {
 	defer wg.Done()
-	for inputFile := range inputFileCh {
+	for submittedDir := range inputFileCh {
 		newPlugin, _ := GetNewPlugin(pluginName)
 		err := newPlugin.Initialize(pluginInputDir)
 		if err != nil {
 			continue
 		}
-		err = newPlugin.Execute(inputFile)
+		err = newPlugin.Execute(submittedDir)
 		if err != nil {
 			continue
 		}
 		mu.Lock()
-		fmt.Printf("Finished executing %s with input file: %s\n", pluginName, inputFile)
+		fmt.Printf("Finished executing %s with input file: %s\n", pluginName, submittedDir)
 		mu.Unlock()
 	}
 }

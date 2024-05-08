@@ -92,11 +92,7 @@ func (fc *familyControllerImpl) addNewMemberToFamily(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, service.BeforeErrorResponse(service.PrepareErrorMap(400, "Invalid Input")))
 		return
 	}
-	//isTutor, err := fc.fs.IsTutorInFamily(idRaw, famId)
-	//if err != nil || !isTutor {
-	//	context.JSON(http.StatusUnauthorized, service.BeforeErrorResponse(service.PrepareErrorMap(401, "You are not a tutor of this family.")))
-	//	return
-	//}
+
 	input.FamilyId = famId
 	family, err := fc.fs.AddMemberToFamily(input)
 	if err != nil {

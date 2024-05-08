@@ -10,6 +10,7 @@ type FamilyRepository interface {
 	GetAllFamiliesWithMembers(int, int) *[]dao.FamilyWithMembers
 	GetMemberByIdWithFamilies(*dao.MemberWithFamilies) error
 	GetFamilyById(*dao.FamilyWithMembers) error
+	GetFamilyOnlyById(*dao.Family) error
 	GetFamilyByIdWithDutiesForTutee(*dao.FamilyWithDuties, string) error
 	GetFamilyByIdWithDutiesForTutor(*dao.FamilyWithDuties) error
 	SaveNewFamily(*dao.Family) error
@@ -48,6 +49,10 @@ func (fr FamilyRepositoryImpl) SaveNewMember(family *dto.MemberToFamilyRequest) 
 
 func (fr FamilyRepositoryImpl) GetFamilyById(family *dao.FamilyWithMembers) error {
 	return dc.getById(family, &dao.FamilyWithMembers{}, "Members.User", "Members.MemberRole", "Members").Error
+}
+
+func (fr FamilyRepositoryImpl) GetFamilyOnlyById(family *dao.Family) error {
+	return dc.getById(family, &dao.Family{}).Error
 }
 
 func (fr FamilyRepositoryImpl) GetFamilyByIdWithDutiesForTutee(family *dao.FamilyWithDuties, username string) error {

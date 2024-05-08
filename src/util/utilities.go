@@ -101,6 +101,7 @@ func ABSOLUTE_GIVEN_STORAGE_PATH() string     { return ABSOLUTE_STORAGE_PATH() +
 func ABSOLUTE_SUBMITTED_STORAGE_PATH() string { return ABSOLUTE_STORAGE_PATH() + "submitted-files/" }
 func ABSOLUTE_REPORT_STORAGE_PATH() string    { return ABSOLUTE_STORAGE_PATH() + "report-files/" }
 func ABSOLUTE_INPUT_FILE_PATH() string        { return ABSOLUTE_STORAGE_PATH() + "input-files/" }
+func ABSOLUTE_TEMP_PATH() string              { return ABSOLUTE_STORAGE_PATH() + "temp/" }
 
 func SaveIcons(fileHeader *multipart.FileHeader, id string) error {
 	return SaveFile(fileHeader, filepath.Join(ABSOLUTE_ICONS_PATH(), id))
@@ -268,6 +269,7 @@ func FileExists(filePath string) bool {
 	return true
 }
 
+// RemoveElementsInPlace returns all the elements that predicate function returns true.
 func RemoveElementsInPlace[T any](slice *[]T, condition func(T) bool) {
 	newIndex := 0
 	for _, item := range *slice {
