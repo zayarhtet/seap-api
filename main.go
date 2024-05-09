@@ -16,4 +16,5 @@ func main() {
 	config.InitDataCenter()
 	config.InitController()
 	config.InitRouter()
+	config.InitSeapStorage()
 }

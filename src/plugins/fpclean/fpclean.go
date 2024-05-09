@@ -27,7 +27,7 @@ func NewPlugin() lib.Plugin {
 }
 
 func (p *FpClean) Initialize(inputDir string) error {
-	p.InitializeLibrary(filepath.Base(inputDir))
+	p.InitializeLibrary(inputDir)
 	err := p.ReadJSONFileAsStruct(filepath.Join(inputDir, "testcase.json"), &p.testCaseList)
 
 	if err != nil {
@@ -38,7 +38,7 @@ func (p *FpClean) Initialize(inputDir string) error {
 }
 
 func (p *FpClean) Execute(targetDir string) error {
-	p.SetUsername(filepath.Base(targetDir))
+	p.SetUsername(targetDir)
 
 	entries := p.ReadDirectory(targetDir)
 	if len(entries) == 0 {

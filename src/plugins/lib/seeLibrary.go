@@ -27,8 +27,8 @@ var (
 	fileReadMutexesMutex sync.Mutex
 )
 
-func (pc *SeePluginStandardLibrary) InitializeLibrary(dutyId string) {
-	pc.dutyId = dutyId
+func (pc *SeePluginStandardLibrary) InitializeLibrary(inputDir string) {
+	pc.dutyId = filepath.Base(inputDir)
 	pc.htmlBody = HTMLElement{nodeName: "div", classes: "flex flex-col gap-y-6 gap-x-4"}
 }
 
@@ -210,8 +210,8 @@ func (pc *SeePluginStandardLibrary) ExecuteCommandWithTimeout(command ...string)
 	}
 }
 
-func (pc *SeePluginStandardLibrary) SetUsername(username string) {
-	pc.username = username
+func (pc *SeePluginStandardLibrary) SetUsername(targetDir string) {
+	pc.username = filepath.Base(targetDir)
 }
 
 func (pc *SeePluginStandardLibrary) ReportAddHTMLTable(tableHeadAndData *[][]string) {}
