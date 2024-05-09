@@ -17,14 +17,20 @@ import (
 )
 
 type SeePluginStandardLibrary struct {
-	memoryFile string
-	dir        string
+	dutyId   string
+	username string
+	htmlBody HTMLElement
 }
 
 var (
 	fileReadMutexes      = make(map[string]*sync.Mutex)
 	fileReadMutexesMutex sync.Mutex
 )
+
+func (pc *SeePluginStandardLibrary) InitializeLibrary(dutyId string) {
+	pc.dutyId = dutyId
+	pc.htmlBody = HTMLElement{nodeName: "div", classes: "flex flex-col gap-y-6 gap-x-4"}
+}
 
 // ReadFileConcurrentlySafe reads the content of the file safely for concurrent access
 func (pc *SeePluginStandardLibrary) ReadFileConcurrentlySafe(filePath string) ([]byte, error) {
@@ -122,6 +128,10 @@ func (pc *SeePluginStandardLibrary) ReadProgrammingFileWithoutComment(filePath, 
 
 // WriteLinesToFile writes lines to a new file specified by filePath
 func (pc *SeePluginStandardLibrary) WriteLinesToFile(lines []string, filePath string) error {
+	err := util.CreateDirectoryIfNotExist(filepath.Dir(filePath))
+	if err != nil {
+		return err
+	}
 	file, err := os.Create(filePath)
 	if err != nil {
 		return err
@@ -198,4 +208,70 @@ func (pc *SeePluginStandardLibrary) ExecuteCommandWithTimeout(command ...string)
 		}
 		return stdout.String(), stderr.String(), nil
 	}
+}
+
+func (pc *SeePluginStandardLibrary) SetUsername(username string) {
+	pc.username = username
+}
+
+func (pc *SeePluginStandardLibrary) ReportAddHTMLTable(tableHeadAndData *[][]string) {}
+
+func (pc *SeePluginStandardLibrary) ReportAddMiniHeader(header string) {
+	pc.htmlBody.AddChild(pc.getHeaderElement(header))
+}
+
+func (pc *SeePluginStandardLibrary) ReportAddParagraph(para string) {
+	pc.htmlBody.AddChild(pc.getParagraphElement(para))
+}
+
+func (pc *SeePluginStandardLibrary) ReportAddHorizontalBar() {
+	element := HTMLElement{
+		nodeName: "div",
+		classes:  "my-6 border-2 border-sky-500 border-dashed",
+	}
+	pc.htmlBody.AddChild(element)
+}
+
+func (pc *SeePluginStandardLibrary) ReportAddMiniHeaderAndParagraph(header, param string) {
+	/*
+	   <div class="flex flex-col gap-y-4">
+	       <h1
+	           class="text-sm md:text-md font-semibold tracking-wide"
+	       >
+	           method name
+	       </h1>
+	       <p class="text-sm tracking-wide">oneForAll</p>
+	   </div>
+	*/
+	mainBody := HTMLElement{
+		nodeName: "div",
+		classes:  "flex flex-col gap-y-4",
+	}
+	mainBody.AddChild(pc.getHeaderElement(header))
+	if len(param) == 0 {
+		param = "--"
+	}
+	mainBody.AddChild(pc.getParagraphElement(param))
+	pc.htmlBody.AddChild(mainBody)
+}
+
+func (pc *SeePluginStandardLibrary) getHeaderElement(header string) HTMLElement {
+	return HTMLElement{
+		nodeName: "h1",
+		classes:  "text-sm md:text-md font-semibold tracking-wide",
+		value:    header,
+	}
+}
+
+func (pc *SeePluginStandardLibrary) getParagraphElement(p string) HTMLElement {
+	return HTMLElement{
+		nodeName: "p",
+		classes:  "text-sm tracking-wide",
+		value:    p,
+	}
+}
+
+func (pc *SeePluginStandardLibrary) CloseLibrary() {
+	reportPath := util.GetAbsoluteReportPath("log.html", pc.username, pc.dutyId)
+	pc.WriteLinesToFile([]string{pc.htmlBody.GetHTML()}, reportPath)
 }

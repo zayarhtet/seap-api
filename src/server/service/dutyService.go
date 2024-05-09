@@ -397,7 +397,7 @@ func (ds dutyServiceImpl) GetReportContent(gradingId string) (string, error) {
 	reportPath := util.GetIndividualDutyReport("log.html", grading.Username, grading.DutyId)
 
 	if len(reportPath) == 0 {
-		return "hello", nil
+		return "", nil
 	}
 
 	htmlContent, err := os.ReadFile(reportPath)

@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
+
+	"github.com/zayarhtet/seap-api/src/util"
 )
 
 const RELATIVE_PLUGINS_PATH = "src/plugins"
@@ -17,7 +19,9 @@ func Init() {
 	}
 }
 
-func ExecuteDuty(pluginName, dutyDir, pluginInputDir string) error {
+func ExecuteDuty(pluginName, dutyId string) error {
+	dutyDir := filepath.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH(), dutyId)
+	pluginInputDir := filepath.Join(util.ABSOLUTE_INPUT_FILE_PATH(), dutyId)
 	entries, err := os.ReadDir(dutyDir)
 	if err != nil {
 		return err
@@ -52,10 +56,13 @@ func Worker(inputFileCh <-chan string, pluginName, pluginInputDir string, wg *sy
 		newPlugin, _ := GetNewPlugin(pluginName)
 		err := newPlugin.Initialize(pluginInputDir)
 		if err != nil {
+			fmt.Println(err)
 			continue
 		}
 		err = newPlugin.Execute(submittedDir)
+		newPlugin.Close()
 		if err != nil {
+			fmt.Println(err)
 			continue
 		}
 		mu.Lock()

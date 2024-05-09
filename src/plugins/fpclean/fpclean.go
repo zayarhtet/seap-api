@@ -18,8 +18,8 @@ type FpClean struct {
 }
 
 type TestCase struct {
-	MethodName string   `json:"method_name"`
-	Arguments  []string `json:"test_cases"`
+	MethodName string              `json:"method_name"`
+	Arguments  []map[string]string `json:"test_cases"`
 }
 
 func NewPlugin() lib.Plugin {
@@ -27,6 +27,7 @@ func NewPlugin() lib.Plugin {
 }
 
 func (p *FpClean) Initialize(inputDir string) error {
+	p.InitializeLibrary(filepath.Base(inputDir))
 	err := p.ReadJSONFileAsStruct(filepath.Join(inputDir, "testcase.json"), &p.testCaseList)
 
 	if err != nil {
@@ -37,6 +38,8 @@ func (p *FpClean) Initialize(inputDir string) error {
 }
 
 func (p *FpClean) Execute(targetDir string) error {
+	p.SetUsername(filepath.Base(targetDir))
+
 	entries := p.ReadDirectory(targetDir)
 	if len(entries) == 0 {
 		return nil
@@ -53,7 +56,10 @@ func (p *FpClean) Execute(targetDir string) error {
 	for _, tc := range p.testCaseList {
 		for _, args := range tc.Arguments {
 
-			mainFunctionLine := fmt.Sprintf("Start = %s %s", tc.MethodName, args)
+			mainFunctionLine := fmt.Sprintf("Start = %s %s", tc.MethodName, args["args"])
+			p.ReportAddMiniHeaderAndParagraph("method name", tc.MethodName)
+			p.ReportAddMiniHeaderAndParagraph("arguments", args["args"])
+			p.ReportAddMiniHeaderAndParagraph("expected", args["expected"])
 
 			tempFileContent := append(linesWithoutComment, mainFunctionLine)
 
@@ -64,18 +70,21 @@ func (p *FpClean) Execute(targetDir string) error {
 			output, errOutput, err := p.ExecuteCommandWithTimeout("clm", "-I", tempDirPath, tempFileName, "-o", tempFilePath)
 
 			if err != nil {
-				fmt.Println(errOutput)
-				fmt.Println(err.Error())
+				p.ReportAddMiniHeaderAndParagraph("actual", output)
+				p.ReportAddMiniHeaderAndParagraph("error", err.Error()+"\n"+errOutput)
+				p.ReportAddHorizontalBar()
+				util.DeleteDirectory(tempDirPath)
 				continue
 			}
 
 			output, errOutput, err = p.ExecuteCommandWithTimeout(tempFilePath)
+			p.ReportAddMiniHeaderAndParagraph("actual", output)
 			if err != nil {
-				fmt.Println(errOutput)
-				fmt.Println(err.Error())
-				continue
+				p.ReportAddMiniHeaderAndParagraph("error", err.Error()+"\n"+errOutput)
+			} else {
+				p.ReportAddMiniHeaderAndParagraph("error", errOutput)
 			}
-			fmt.Println(output)
+			p.ReportAddHorizontalBar()
 			util.DeleteDirectory(tempDirPath)
 		}
 	}
@@ -104,6 +113,10 @@ func (p *FpClean) LoadFileContent(targetFilePath string, tempFileName string) ([
 	}, linesWithoutComment...)
 
 	return linesWithoutComment, nil
+}
+
+func (p *FpClean) Close() {
+	p.CloseLibrary()
 }
 
 func (p *FpClean) Name() string {

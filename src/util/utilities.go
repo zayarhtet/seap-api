@@ -107,7 +107,7 @@ func SaveIcons(fileHeader *multipart.FileHeader, id string) error {
 	return SaveFile(fileHeader, filepath.Join(ABSOLUTE_ICONS_PATH(), id))
 }
 
-func createDirectoryIfNotExist(dirPath string) error {
+func CreateDirectoryIfNotExist(dirPath string) error {
 	_, err := os.Stat(dirPath)
 	if os.IsNotExist(err) {
 		err := os.MkdirAll(dirPath, 0777)
@@ -125,7 +125,7 @@ func SaveGivenFiles(fileHeaders []*multipart.FileHeader, id string) (map[string]
 		return map[string]string{}, nil
 	}
 	filePath := filepath.Join(ABSOLUTE_GIVEN_STORAGE_PATH(), id)
-	createDirectoryIfNotExist(filePath)
+	CreateDirectoryIfNotExist(filePath)
 	return SaveFiles(fileHeaders, filePath)
 }
 
@@ -134,7 +134,7 @@ func SaveInputFiles(fileHeaders []*multipart.FileHeader, id string) (map[string]
 		return map[string]string{}, nil
 	}
 	filePath := filepath.Join(ABSOLUTE_INPUT_FILE_PATH(), id)
-	createDirectoryIfNotExist(filePath)
+	CreateDirectoryIfNotExist(filePath)
 	return SaveFiles(fileHeaders, filePath)
 }
 
@@ -143,13 +143,13 @@ func SaveSubmittedFiles(fileHeaders []*multipart.FileHeader, dutyId, username st
 		return map[string]string{}, nil
 	}
 	filePath := filepath.Join(ABSOLUTE_SUBMITTED_STORAGE_PATH(), dutyId, username)
-	createDirectoryIfNotExist(filePath)
+	CreateDirectoryIfNotExist(filePath)
 	return SaveFiles(fileHeaders, filePath)
 }
 
 func SaveFiles(fileHeaders []*multipart.FileHeader, filePath string) (map[string]string, error) {
 	result := map[string]string{}
-	createDirectoryIfNotExist(filePath)
+	CreateDirectoryIfNotExist(filePath)
 	errorMessage := ""
 	for _, fh := range fileHeaders {
 		id := NewUUID()
@@ -229,11 +229,18 @@ func GetSubmittedFileAbsolutePath(dutyId, username, fileName string) string {
 	return ""
 }
 
+func GetAbsoluteReportPath(fileName string, username, dutyId string) string {
+	if len(fileName) == 0 || len(dutyId) == 0 {
+		return ""
+	}
+	return filepath.Join(ABSOLUTE_REPORT_STORAGE_PATH(), dutyId, username, fileName)
+}
+
 func GetIndividualDutyReport(fileName string, username, dutyId string) string {
 	if len(fileName) == 0 || len(dutyId) == 0 {
 		return ""
 	}
-	absFilePath := filepath.Join(ABSOLUTE_REPORT_STORAGE_PATH(), dutyId, username, fileName)
+	absFilePath := GetAbsoluteReportPath(fileName, username, dutyId)
 	if FileExists(absFilePath) {
 		return absFilePath
 	}

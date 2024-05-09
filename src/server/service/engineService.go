@@ -1,13 +1,10 @@
 package service
 
 import (
-	"path/filepath"
-
 	"github.com/zayarhtet/seap-api/src/engine"
 	"github.com/zayarhtet/seap-api/src/server/model/dao"
 	"github.com/zayarhtet/seap-api/src/server/model/dto"
 	"github.com/zayarhtet/seap-api/src/server/repository"
-	"github.com/zayarhtet/seap-api/src/util"
 )
 
 type EngineService interface {
@@ -28,7 +25,10 @@ func (es engineServiceImpl) ExecuteSubmittedFile(dutyId string) (dto.Response, e
 	if err != nil {
 		return BeforeErrorResponse(PrepareErrorMap(404, "record not found.")), err
 	}
-	go engine.ExecuteDuty("fpclean", filepath.Join(util.ABSOLUTE_SUBMITTED_STORAGE_PATH(), dutyId), filepath.Join(util.ABSOLUTE_INPUT_FILE_PATH(), dutyId))
+	if len(duty.PluginName) == 0 {
+		return "", nil
+	}
+	go engine.ExecuteDuty(duty.PluginName, dutyId)
 	return "EXECUTING", nil
 }
 
