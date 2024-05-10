@@ -9,12 +9,12 @@ import (
 )
 
 type MemberController interface {
-	getAllMembers(*gin.Context)
-	getAllMembersWithFamilies(*gin.Context)
-	deleteMember(*gin.Context)
-	getMemberById(*gin.Context)
-	grantTutorRole(*gin.Context)
-	revokeTutorRole(*gin.Context)
+	GetAllMembers(*gin.Context)
+	GetAllMembersWithFamilies(*gin.Context)
+	DeleteMember(*gin.Context)
+	GetMemberById(*gin.Context)
+	GrantTutorRole(*gin.Context)
+	RevokeTutorRole(*gin.Context)
 }
 
 type memberControllerImpl struct {
@@ -27,28 +27,37 @@ func initMember() {
 	if memberControllerObj != nil {
 		return
 	}
-	memberControllerObj = &memberControllerImpl{ms: service.NewMemberService()}
+	ms := service.NewMemberService()
+	memberControllerObj = NewMemberController(ms)
 }
 
-func (mc *memberControllerImpl) getAllMembers(context *gin.Context) {
+func (mc *memberControllerImpl) SetMemberService(ms service.MemberService) {
+	mc.ms = ms
+}
+
+func NewMemberController(ms service.MemberService) MemberController {
+	return &memberControllerImpl{ms: ms}
+}
+
+func (mc *memberControllerImpl) GetAllMembers(context *gin.Context) {
 	getPaginatedResponseByCallBack(context, mc.ms.GetAllMembersResponse)
 }
 
-func (mc *memberControllerImpl) getAllMembersWithFamilies(context *gin.Context) {
+func (mc *memberControllerImpl) GetAllMembersWithFamilies(context *gin.Context) {
 	getPaginatedResponseByCallBack(context, mc.ms.GetAllMembersWithFamiliesResponse)
 }
 
-func (mc *memberControllerImpl) getMemberById(context *gin.Context) {
+func (mc *memberControllerImpl) GetMemberById(context *gin.Context) {
 	idRaw := context.Param("id")
 	getOneResponseByCallBack(context, idRaw, mc.ms.GetMemberByIdResponse)
 }
 
-func (mc *memberControllerImpl) deleteMember(context *gin.Context) {
+func (mc *memberControllerImpl) DeleteMember(context *gin.Context) {
 	idRaw := context.Param("id")
 	getOneResponseByCallBack(context, idRaw, mc.ms.DeleteMemberResponse)
 }
 
-func (mc *memberControllerImpl) grantTutorRole(context *gin.Context) {
+func (mc *memberControllerImpl) GrantTutorRole(context *gin.Context) {
 	username := context.Param("username")
 
 	resp, err := mc.ms.GrantRoleResponse(username, 1)
@@ -58,7 +67,7 @@ func (mc *memberControllerImpl) grantTutorRole(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, resp)
 }
-func (mc *memberControllerImpl) revokeTutorRole(context *gin.Context) {
+func (mc *memberControllerImpl) RevokeTutorRole(context *gin.Context) {
 	username := context.Param("username")
 	resp, err := mc.ms.GrantRoleResponse(username, 2)
 	if err != nil {
@@ -69,25 +78,25 @@ func (mc *memberControllerImpl) revokeTutorRole(context *gin.Context) {
 }
 
 func GetAllMembers() gin.HandlerFunc {
-	return memberControllerObj.getAllMembers
+	return memberControllerObj.GetAllMembers
 }
 
 func GetAllMembersWithFamilies() gin.HandlerFunc {
-	return memberControllerObj.getAllMembersWithFamilies
+	return memberControllerObj.GetAllMembersWithFamilies
 }
 
 func GetMemberById() gin.HandlerFunc {
-	return memberControllerObj.getMemberById
+	return memberControllerObj.GetMemberById
 }
 
 func DeleteMember() gin.HandlerFunc {
-	return memberControllerObj.deleteMember
+	return memberControllerObj.DeleteMember
 }
 
 func PromoteRole() gin.HandlerFunc {
-	return memberControllerObj.grantTutorRole
+	return memberControllerObj.GrantTutorRole
 }
 
 func DemoteRole() gin.HandlerFunc {
-	return memberControllerObj.revokeTutorRole
+	return memberControllerObj.RevokeTutorRole
 }

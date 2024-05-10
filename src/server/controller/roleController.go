@@ -10,8 +10,8 @@ import (
 )
 
 type RoleController interface {
-	getAllRoles(*gin.Context)
-	getRoleById(*gin.Context)
+	GetAllRoles(*gin.Context)
+	GetRoleById(*gin.Context)
 }
 
 type roleControllerImpl struct {
@@ -24,15 +24,23 @@ func initRole() {
 	if roleControllerObj != nil {
 		return
 	}
-
-	roleControllerObj = &roleControllerImpl{rs: service.NewRoleService()}
+	rs := service.NewRoleService()
+	roleControllerObj = NewRoleController(rs)
 }
 
-func (rc *roleControllerImpl) getAllRoles(context *gin.Context) {
+func (rc *roleControllerImpl) SetRoleService(rs service.RoleService) {
+	rc.rs = rs
+}
+
+func NewRoleController(ms service.RoleService) RoleController {
+	return &roleControllerImpl{rs: ms}
+}
+
+func (rc *roleControllerImpl) GetAllRoles(context *gin.Context) {
 	getPaginatedResponseByCallBack(context, rc.rs.GetAllRolesResponse)
 }
 
-func (rc *roleControllerImpl) getRoleById(context *gin.Context) {
+func (rc *roleControllerImpl) GetRoleById(context *gin.Context) {
 	idRaw, err := strconv.Atoi(context.Param("id"))
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -40,14 +48,18 @@ func (rc *roleControllerImpl) getRoleById(context *gin.Context) {
 	}
 	id := uint(idRaw)
 	response, err := rc.rs.GetRoleByIdResponse(id)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	context.JSON(http.StatusOK, response)
 }
 
 func GetAllRoles() gin.HandlerFunc {
-	return roleControllerObj.getAllRoles
+	return roleControllerObj.GetAllRoles
 }
 
 func GetRoleById() gin.HandlerFunc {
-	return roleControllerObj.getRoleById
+	return roleControllerObj.GetRoleById
 }
