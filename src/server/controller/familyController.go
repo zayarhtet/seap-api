@@ -10,14 +10,14 @@ import (
 )
 
 type FamilyController interface {
-	getAllFamilies(*gin.Context)
-	getAllFamiliesWithMembers(*gin.Context)
-	getMemberByIdWithFamilies(*gin.Context)
-	getAllDutiesByFamilyId(*gin.Context)
-	getAllMembersByFamilyId(*gin.Context)
-	saveNewFamily(*gin.Context)
-	addNewMemberToFamily(*gin.Context)
-	deleteFamily(*gin.Context)
+	GetAllFamilies(*gin.Context)
+	GetAllFamiliesWithMembers(*gin.Context)
+	GetMemberByIdWithFamilies(*gin.Context)
+	GetAllDutiesByFamilyId(*gin.Context)
+	GetAllMembersByFamilyId(*gin.Context)
+	SaveNewFamily(*gin.Context)
+	AddNewMemberToFamily(*gin.Context)
+	DeleteFamily(*gin.Context)
 }
 
 type familyControllerImpl struct {
@@ -30,23 +30,32 @@ func initFamily() {
 	if familyControllerObj != nil {
 		return
 	}
-	familyControllerObj = &familyControllerImpl{fs: service.NewFamilyService()}
+	fs := service.NewFamilyService()
+	familyControllerObj = NewFamilyController(fs)
 }
 
-func (fc *familyControllerImpl) getAllFamilies(context *gin.Context) {
+func (fc *familyControllerImpl) SetFamilyService(fs service.FamilyService) {
+	fc.fs = fs
+}
+
+func NewFamilyController(fs service.FamilyService) FamilyController {
+	return &familyControllerImpl{fs: fs}
+}
+
+func (fc *familyControllerImpl) GetAllFamilies(context *gin.Context) {
 	getPaginatedResponseByCallBack(context, fc.fs.GetAllFamiliesResponse)
 }
 
-func (fc *familyControllerImpl) getAllFamiliesWithMembers(context *gin.Context) {
+func (fc *familyControllerImpl) GetAllFamiliesWithMembers(context *gin.Context) {
 	getPaginatedResponseByCallBack(context, fc.fs.GetAllFamiliesWithMembersResponse)
 }
 
-func (fc *familyControllerImpl) getMemberByIdWithFamilies(context *gin.Context) {
+func (fc *familyControllerImpl) GetMemberByIdWithFamilies(context *gin.Context) {
 	idRaw := context.Param("id")
 	getOneResponseByCallBack(context, idRaw, fc.fs.GetMemberByIdWithFamiliesResponse)
 }
 
-func (fc *familyControllerImpl) getAllDutiesByFamilyId(context *gin.Context) {
+func (fc *familyControllerImpl) GetAllDutiesByFamilyId(context *gin.Context) {
 	idRaw := context.Param("famId")
 	username := context.MustGet("username").(string)
 
@@ -59,12 +68,12 @@ func (fc *familyControllerImpl) getAllDutiesByFamilyId(context *gin.Context) {
 	context.JSON(http.StatusOK, resp)
 }
 
-func (fc *familyControllerImpl) getAllMembersByFamilyId(context *gin.Context) {
+func (fc *familyControllerImpl) GetAllMembersByFamilyId(context *gin.Context) {
 	idRaw := context.Param("famId")
 	getOneResponseByCallBack(context, idRaw, fc.fs.GetFamilyByIdWithMembers)
 }
 
-func (fc *familyControllerImpl) saveNewFamily(context *gin.Context) {
+func (fc *familyControllerImpl) SaveNewFamily(context *gin.Context) {
 	idRaw := context.MustGet("username").(string)
 	var familyName string = context.PostForm("familyName")
 	var familyInfo string = context.PostForm("familyInfo")
@@ -78,13 +87,13 @@ func (fc *familyControllerImpl) saveNewFamily(context *gin.Context) {
 
 	newFamily, err := fc.fs.SaveNewFamily(idRaw, input, file)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, newFamily)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	context.JSON(http.StatusOK, newFamily)
 }
 
-func (fc *familyControllerImpl) addNewMemberToFamily(context *gin.Context) {
+func (fc *familyControllerImpl) AddNewMemberToFamily(context *gin.Context) {
 	famId := context.Param("famId")
 	var input dto.MemberToFamilyRequest
 
@@ -96,45 +105,45 @@ func (fc *familyControllerImpl) addNewMemberToFamily(context *gin.Context) {
 	input.FamilyId = famId
 	family, err := fc.fs.AddMemberToFamily(input)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, family)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	context.JSON(http.StatusOK, family)
 }
 
-func (fc *familyControllerImpl) deleteFamily(context *gin.Context) {
+func (fc *familyControllerImpl) DeleteFamily(context *gin.Context) {
 	idRaw := context.Param("famId")
 	getOneResponseByCallBack(context, idRaw, fc.fs.DeleteFamilyResponse)
 }
 
 func GetAllFamilies() gin.HandlerFunc {
-	return familyControllerObj.getAllFamilies
+	return familyControllerObj.GetAllFamilies
 }
 
 func GetAllFamiliesWithMembers() gin.HandlerFunc {
-	return familyControllerObj.getAllFamiliesWithMembers
+	return familyControllerObj.GetAllFamiliesWithMembers
 }
 
 func GetMemberByIdWithFamilies() gin.HandlerFunc {
-	return familyControllerObj.getMemberByIdWithFamilies
+	return familyControllerObj.GetMemberByIdWithFamilies
 }
 
 func SaveNewFamily() gin.HandlerFunc {
-	return familyControllerObj.saveNewFamily
+	return familyControllerObj.SaveNewFamily
 }
 
 func AddNewMemberToFamily() gin.HandlerFunc {
-	return familyControllerObj.addNewMemberToFamily
+	return familyControllerObj.AddNewMemberToFamily
 }
 
 func GetAllDutiesByFamilyId() gin.HandlerFunc {
-	return familyControllerObj.getAllDutiesByFamilyId
+	return familyControllerObj.GetAllDutiesByFamilyId
 }
 
 func GetAllMembersByFamilyId() gin.HandlerFunc {
-	return familyControllerObj.getAllMembersByFamilyId
+	return familyControllerObj.GetAllMembersByFamilyId
 }
 
 func DeleteFamily() gin.HandlerFunc {
-	return familyControllerObj.deleteFamily
+	return familyControllerObj.DeleteFamily
 }

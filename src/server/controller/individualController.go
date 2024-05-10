@@ -9,11 +9,11 @@ import (
 )
 
 type IndividualController interface {
-	getMyMember(*gin.Context)
-	getMyRole(*gin.Context)
-	getMyFamilies(*gin.Context)
-	getMyDuties(*gin.Context)
-	getMyRoleInFamily(*gin.Context)
+	GetMyMember(*gin.Context)
+	GetMyRole(*gin.Context)
+	GetMyFamilies(*gin.Context)
+	GetMyDuties(*gin.Context)
+	GetMyRoleInFamily(*gin.Context)
 }
 
 type individualControllerImpl struct {
@@ -29,35 +29,45 @@ func initIndividual() {
 	if individualControllerObj != nil {
 		return
 	}
-	individualControllerObj = &individualControllerImpl{
-		ms: service.NewMemberService(),
-		rs: service.NewRoleService(),
-		fs: service.NewFamilyService(),
-		ds: service.NewDutyService(),
-	}
+	ms := service.NewMemberService()
+	rs := service.NewRoleService()
+	ds := service.NewDutyService()
+	fs := service.NewFamilyService()
+	individualControllerObj = NewIndividualController(ms, rs, fs, ds)
 }
 
-func (ic *individualControllerImpl) getMyMember(context *gin.Context) {
+func (ic *individualControllerImpl) SetIndividualServices(ms service.MemberService, rs service.RoleService, fs service.FamilyService, ds service.DutyService) {
+	ic.ms = ms
+	ic.fs = fs
+	ic.rs = rs
+	ic.ds = ds
+}
+
+func NewIndividualController(ms service.MemberService, rs service.RoleService, fs service.FamilyService, ds service.DutyService) IndividualController {
+	return &individualControllerImpl{ms, rs, fs, ds}
+}
+
+func (ic *individualControllerImpl) GetMyMember(context *gin.Context) {
 	idRaw := context.MustGet("username").(string)
 	getOneResponseByCallBack(context, idRaw, ic.ms.GetMemberByIdResponse)
 }
 
-func (ic *individualControllerImpl) getMyRole(context *gin.Context) {
+func (ic *individualControllerImpl) GetMyRole(context *gin.Context) {
 	idRaw := context.MustGet("username").(string)
 	getOneResponseByCallBack(context, idRaw, ic.rs.GetRoleByMemberResponse)
 }
 
-func (ic *individualControllerImpl) getMyFamilies(context *gin.Context) {
+func (ic *individualControllerImpl) GetMyFamilies(context *gin.Context) {
 	idRaw := context.MustGet("username").(string)
 	getOneResponseByCallBack(context, idRaw, ic.fs.GetFamiliesOnlyByUsername)
 }
 
-func (ic *individualControllerImpl) getMyDuties(context *gin.Context) {
+func (ic *individualControllerImpl) GetMyDuties(context *gin.Context) {
 	idRaw := context.MustGet("username").(string)
 	getOneResponseByCallBack(context, idRaw, ic.ds.GetAllDutiesByMemberResponse)
 }
 
-func (ic *individualControllerImpl) getMyRoleInFamily(context *gin.Context) {
+func (ic *individualControllerImpl) GetMyRoleInFamily(context *gin.Context) {
 	idRaw := context.MustGet("username").(string)
 	famIdRaw := context.Param("famId")
 
@@ -70,21 +80,21 @@ func (ic *individualControllerImpl) getMyRoleInFamily(context *gin.Context) {
 }
 
 func GetMyMember() gin.HandlerFunc {
-	return individualControllerObj.getMyMember
+	return individualControllerObj.GetMyMember
 }
 
 func GetMyFamilies() gin.HandlerFunc {
-	return individualControllerObj.getMyFamilies
+	return individualControllerObj.GetMyFamilies
 }
 
 func GetMyRole() gin.HandlerFunc {
-	return individualControllerObj.getMyRole
+	return individualControllerObj.GetMyRole
 }
 
 func GetMyRoleInFamily() gin.HandlerFunc {
-	return individualControllerObj.getMyRoleInFamily
+	return individualControllerObj.GetMyRoleInFamily
 }
 
 func GetMyDuties() gin.HandlerFunc {
-	return individualControllerObj.getMyDuties
+	return individualControllerObj.GetMyDuties
 }
