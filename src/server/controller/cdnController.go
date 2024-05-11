@@ -10,12 +10,12 @@ import (
 )
 
 type CDNController interface {
-	getProfileImage(*gin.Context)
-	saveGivenFiles(*gin.Context)
-	downloadGivenFile(*gin.Context)
-	uploadSubmittedFiles(*gin.Context)
-	downloadSubmittedFile(*gin.Context)
-	deleteSubmittedFile(*gin.Context)
+	GetProfileImage(*gin.Context)
+	SaveGivenFiles(*gin.Context)
+	DownloadGivenFile(*gin.Context)
+	UploadSubmittedFiles(*gin.Context)
+	DownloadSubmittedFile(*gin.Context)
+	DeleteSubmittedFile(*gin.Context)
 }
 
 type CDNControllerImpl struct {
@@ -29,12 +29,22 @@ func initCDN() {
 	if cdnControllerObj != nil {
 		return
 	}
-	cdnControllerObj = &CDNControllerImpl{fs: service.NewFamilyService(), ds: service.NewDutyService()}
+	fs := service.NewFamilyService()
+	ds := service.NewDutyService()
+	cdnControllerObj = NewCDNController(fs, ds)
 }
 
-func (cc *CDNControllerImpl) getProfileImage(context *gin.Context) {
+func (cc *CDNControllerImpl) SetCDNService(fs service.FamilyService, ds service.DutyService) {
+	cc.fs = fs
+	cc.ds = ds
+}
+
+func NewCDNController(fs service.FamilyService, ds service.DutyService) CDNController {
+	return &CDNControllerImpl{fs: fs, ds: ds}
+}
+
+func (cc *CDNControllerImpl) GetProfileImage(context *gin.Context) {
 	idRaw := context.Param("famId")
-	//username := context.MustGet("username").(string)
 
 	path, err := cc.fs.GetFamilyProfileImagePath(idRaw)
 	if err != nil {
@@ -44,7 +54,7 @@ func (cc *CDNControllerImpl) getProfileImage(context *gin.Context) {
 	context.File(path)
 }
 
-func (cc *CDNControllerImpl) saveGivenFiles(context *gin.Context) {
+func (cc *CDNControllerImpl) SaveGivenFiles(context *gin.Context) {
 	dutyId := context.Param("dutyId")
 	err := context.Request.ParseMultipartForm(10 << 20) // 10 MB maximum size
 	if err != nil {
@@ -71,7 +81,7 @@ func (cc *CDNControllerImpl) saveGivenFiles(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "uploaded."})
 }
 
-func (cc *CDNControllerImpl) uploadSubmittedFiles(context *gin.Context) {
+func (cc *CDNControllerImpl) UploadSubmittedFiles(context *gin.Context) {
 	dutyId := context.Param("dutyId")
 	famId := context.Param("famId")
 	username := context.MustGet("username").(string)
@@ -91,7 +101,7 @@ func (cc *CDNControllerImpl) uploadSubmittedFiles(context *gin.Context) {
 	context.JSON(http.StatusOK, resp)
 }
 
-func (cc *CDNControllerImpl) downloadGivenFile(context *gin.Context) {
+func (cc *CDNControllerImpl) DownloadGivenFile(context *gin.Context) {
 	dutyId := context.Param("dutyId")
 	fileId := context.Param("fileId")
 
@@ -106,7 +116,7 @@ func (cc *CDNControllerImpl) downloadGivenFile(context *gin.Context) {
 	context.File(filePath)
 }
 
-func (cc *CDNControllerImpl) downloadSubmittedFile(context *gin.Context) {
+func (cc *CDNControllerImpl) DownloadSubmittedFile(context *gin.Context) {
 	dutyId := context.Param("dutyId")
 	fileId := context.Param("fileId")
 	familyRole := context.MustGet("familyRole").(string)
@@ -126,7 +136,7 @@ func (cc *CDNControllerImpl) downloadSubmittedFile(context *gin.Context) {
 	context.File(filePath)
 }
 
-func (cc *CDNControllerImpl) deleteSubmittedFile(context *gin.Context) {
+func (cc *CDNControllerImpl) DeleteSubmittedFile(context *gin.Context) {
 	dutyId := context.Param("dutyId")
 	fileId := context.Param("fileId")
 	username := context.MustGet("username").(string)
@@ -141,25 +151,25 @@ func (cc *CDNControllerImpl) deleteSubmittedFile(context *gin.Context) {
 }
 
 func CDNProfileImage() gin.HandlerFunc {
-	return cdnControllerObj.getProfileImage
+	return cdnControllerObj.GetProfileImage
 }
 
 func SaveGivenFiles() gin.HandlerFunc {
-	return cdnControllerObj.saveGivenFiles
+	return cdnControllerObj.SaveGivenFiles
 }
 
 func DownloadGivenFile() gin.HandlerFunc {
-	return cdnControllerObj.downloadGivenFile
+	return cdnControllerObj.DownloadGivenFile
 }
 
 func UploadSubmittedFiles() gin.HandlerFunc {
-	return cdnControllerObj.uploadSubmittedFiles
+	return cdnControllerObj.UploadSubmittedFiles
 }
 
 func DownloadSubmittedFile() gin.HandlerFunc {
-	return cdnControllerObj.downloadSubmittedFile
+	return cdnControllerObj.DownloadSubmittedFile
 }
 
 func DeleteSubmittedFile() gin.HandlerFunc {
-	return cdnControllerObj.deleteSubmittedFile
+	return cdnControllerObj.DeleteSubmittedFile
 }

@@ -7,8 +7,9 @@ import (
 )
 
 type MockFamilyService struct {
-	Data any   // Predefined data to return
-	Err  error // Predefined error to return
+	FilePath string // Mock file path to return
+	Data     any    // Predefined data to return
+	Err      error  // Predefined error to return
 }
 
 func (m *MockFamilyService) GetAllFamiliesResponse(i int, i2 int) (dto.Response, error) {
@@ -60,8 +61,7 @@ func (m *MockFamilyService) IsTutorInFamily(s string, s2 string) (bool, error) {
 }
 
 func (m *MockFamilyService) GetFamilyProfileImagePath(s string) (string, error) {
-	//TODO implement me
-	panic("implement me")
+	return m.FilePath, m.Err
 }
 
 func (m *MockFamilyService) DeleteFamilyResponse(s string) (dto.Response, error) {

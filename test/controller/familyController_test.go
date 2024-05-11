@@ -156,8 +156,8 @@ func TestAddNewMemberToFamily_Error(t *testing.T) {
 	c.Request = req
 
 	mockService := &service.MockFamilyService{
-		Data: "",                       // No data
-		Err:  errors.New("mock error"), // Predefined error
+		Data: "",
+		Err:  errors.New("mock error"),
 	}
 
 	fc := controller.NewFamilyController(mockService)
