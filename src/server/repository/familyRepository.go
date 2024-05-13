@@ -25,58 +25,58 @@ type FamilyRepositoryImpl struct{}
 
 func (fr FamilyRepositoryImpl) GetAllFamilies(offset, limit int) *[]dao.Family {
 	var families []dao.Family
-	dc.getAllByPagination(&families, offset, limit, &dao.Family{})
+	dc.GetAllByPagination(&families, offset, limit, &dao.Family{})
 	return &families
 }
 
 func (fr FamilyRepositoryImpl) GetAllFamiliesWithMembers(offset, limit int) *[]dao.FamilyWithMembers {
 	var families []dao.FamilyWithMembers
-	dc.getAllByPagination(&families, offset, limit, &dao.Family{}, "Members.User", "Members", "Members.MemberRole")
+	dc.GetAllByPagination(&families, offset, limit, &dao.Family{}, "Members.User", "Members", "Members.MemberRole")
 	return &families
 }
 
 func (fr FamilyRepositoryImpl) GetMemberByIdWithFamilies(member *dao.MemberWithFamilies) error {
-	return dc.getById(member, &dao.MemberWithFamilies{}, "Families.Family", "Families.MemberRole", "Families").Error
+	return dc.GetById(member, &dao.MemberWithFamilies{}, "Families.Family", "Families.MemberRole", "Families").Error
 }
 
 func (fr FamilyRepositoryImpl) SaveNewFamily(family *dao.Family) error {
-	return dc.insertOne(family).Error
+	return dc.InsertOne(family).Error
 }
 
 func (fr FamilyRepositoryImpl) SaveNewMember(family *dto.MemberToFamilyRequest) error {
-	return dc.insertOne(family).Error
+	return dc.InsertOne(family).Error
 }
 
 func (fr FamilyRepositoryImpl) GetFamilyById(family *dao.FamilyWithMembers) error {
-	return dc.getById(family, &dao.FamilyWithMembers{}, "Members.User", "Members.MemberRole", "Members").Error
+	return dc.GetById(family, &dao.FamilyWithMembers{}, "Members.User", "Members.MemberRole", "Members").Error
 }
 
 func (fr FamilyRepositoryImpl) GetFamilyOnlyById(family *dao.Family) error {
-	return dc.getById(family, &dao.Family{}).Error
+	return dc.GetById(family, &dao.Family{}).Error
 }
 
 func (fr FamilyRepositoryImpl) GetFamilyByIdWithDutiesForTutee(family *dao.FamilyWithDuties, username string) error {
-	return dc.getByIdWithCondition(family, username, &dao.FamilyWithDuties{}).Error
+	return dc.GetByIdWithCondition(family, username, &dao.FamilyWithDuties{}).Error
 }
 
 func (fr FamilyRepositoryImpl) GetFamilyByIdWithDutiesForTutor(family *dao.FamilyWithDuties) error {
-	return dc.getById(family, &dao.FamilyWithDuties{}, "Duties").Error
+	return dc.GetById(family, &dao.FamilyWithDuties{}, "Duties").Error
 }
 
 func (fr FamilyRepositoryImpl) GetMemberRoleInFamily(rq *dao.MemberForFamily) error {
-	return dc.getById(rq, &dao.MemberForFamily{}, "MemberRole").Error
+	return dc.GetById(rq, &dao.MemberForFamily{}, "MemberRole").Error
 }
 
 func (fr FamilyRepositoryImpl) GetMyRoleInFamily(member *dao.FamilyForMember) error {
-	return dc.getById(member, &dao.FamilyForMember{}, "MemberRole").Error
+	return dc.GetById(member, &dao.FamilyForMember{}, "MemberRole").Error
 }
 
 func (fr FamilyRepositoryImpl) GetRowCount() *int64 {
 	var count int64
-	dc.getRowCount("family", &count)
+	dc.GetRowCount("family", &count)
 	return &count
 }
 
 func (fr FamilyRepositoryImpl) DeleteFamilyById(family *dao.Family) error {
-	return dc.deleteOneById(family).Error
+	return dc.DeleteOneById(family).Error
 }

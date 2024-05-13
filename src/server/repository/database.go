@@ -9,38 +9,46 @@ import (
 	"gorm.io/gorm"
 )
 
-type dataCenter interface {
-	connectDatabase()
-	getAll(any) *gorm.DB
-	getAllByPagination(any, int, int, any, ...string) *gorm.DB
-	getRowCount(string, *int64) *gorm.DB
-	getById(any, any, ...string) *gorm.DB
-	insertOne(any) *gorm.DB
-	insertAll(any) *gorm.DB
-	deleteOneById(any) *gorm.DB
-	getAllByPaginationWithCondition(any, int, int, any, any, ...string) *gorm.DB
-	getByIdWithCondition(any, string, any, ...string) *gorm.DB
-	getOneByStructCondition(any, any) *gorm.DB
-	getAllByStructCondition(any, any, any) *gorm.DB
+type DataCenter interface {
+	ConnectDatabase()
+	GetAll(any) *gorm.DB
+	GetAllByPagination(any, int, int, any, ...string) *gorm.DB
+	GetRowCount(string, *int64) *gorm.DB
+	GetById(any, any, ...string) *gorm.DB
+	InsertOne(any) *gorm.DB
+	InsertAll(any) *gorm.DB
+	DeleteOneById(any) *gorm.DB
+	GetAllByPaginationWithCondition(any, int, int, any, any, ...string) *gorm.DB
+	GetByIdWithCondition(any, string, any, ...string) *gorm.DB
+	GetOneByStructCondition(any, any) *gorm.DB
+	GetAllByStructCondition(any, any, any) *gorm.DB
 
-	updateModelByMap(map[string]any, any) *gorm.DB
+	UpdateModelByMap(map[string]any, any) *gorm.DB
 }
 
 type seapDataCenter struct {
 	db *gorm.DB
 }
 
-var dc dataCenter
+var dc DataCenter
 
 func Init() {
 	if dc != nil {
 		return
 	}
 	dc = &seapDataCenter{}
-	dc.connectDatabase()
+	dc.ConnectDatabase()
 }
 
-func (d *seapDataCenter) connectDatabase() {
+func NewDataCenter() DataCenter {
+	return &seapDataCenter{}
+}
+
+func InitializeDataCenter(ds DataCenter) {
+	dc = ds
+}
+
+func (d *seapDataCenter) ConnectDatabase() {
 	dbDriver := os.Getenv("DB_DRIVER")
 	dbHost := os.Getenv("DB_HOST")
 	dbUser := os.Getenv("DB_USER")
@@ -62,12 +70,12 @@ func (d *seapDataCenter) connectDatabase() {
 	}
 }
 
-func (d *seapDataCenter) getAll(dest any) *gorm.DB {
+func (d *seapDataCenter) GetAll(dest any) *gorm.DB {
 	return d.db.Find(dest)
 	//return d.db.Model(&dao.Member{}).Preload("Role").Find(dest)
 }
 
-func (d *seapDataCenter) getAllByPagination(dest any, offset, limit int, model any, preloads ...string) *gorm.DB {
+func (d *seapDataCenter) GetAllByPagination(dest any, offset, limit int, model any, preloads ...string) *gorm.DB {
 	preloadedDb := d.db
 	for _, s := range preloads {
 		preloadedDb = preloadedDb.Preload(s)
@@ -75,7 +83,7 @@ func (d *seapDataCenter) getAllByPagination(dest any, offset, limit int, model a
 	return preloadedDb.Model(model).Limit(limit).Offset(offset).Find(dest)
 }
 
-func (d *seapDataCenter) getAllByPaginationWithCondition(dest any, offset, limit int, condition any, model any, preloads ...string) *gorm.DB {
+func (d *seapDataCenter) GetAllByPaginationWithCondition(dest any, offset, limit int, condition any, model any, preloads ...string) *gorm.DB {
 	preloadedDb := d.db
 	for _, s := range preloads {
 		preloadedDb = preloadedDb.Preload(s)
@@ -83,11 +91,11 @@ func (d *seapDataCenter) getAllByPaginationWithCondition(dest any, offset, limit
 	return preloadedDb.Model(model).Where(condition).Limit(limit).Offset(offset).Find(dest)
 }
 
-func (d *seapDataCenter) getRowCount(tableName string, count *int64) *gorm.DB {
+func (d *seapDataCenter) GetRowCount(tableName string, count *int64) *gorm.DB {
 	return d.db.Table(tableName).Count(count)
 }
 
-func (d *seapDataCenter) getById(dest any, model any, preloads ...string) *gorm.DB {
+func (d *seapDataCenter) GetById(dest any, model any, preloads ...string) *gorm.DB {
 	preloadedDb := d.db
 	for _, s := range preloads {
 		preloadedDb = preloadedDb.Preload(s)
@@ -95,19 +103,19 @@ func (d *seapDataCenter) getById(dest any, model any, preloads ...string) *gorm.
 	return preloadedDb.Model(model).Where(dest).First(dest)
 }
 
-func (d *seapDataCenter) insertOne(dest any) *gorm.DB {
+func (d *seapDataCenter) InsertOne(dest any) *gorm.DB {
 	return d.db.Create(dest)
 }
 
-func (d *seapDataCenter) insertAll(dest any) *gorm.DB {
-	return d.insertOne(dest)
+func (d *seapDataCenter) InsertAll(dest any) *gorm.DB {
+	return d.InsertOne(dest)
 }
 
-func (d *seapDataCenter) deleteOneById(dest any) *gorm.DB {
+func (d *seapDataCenter) DeleteOneById(dest any) *gorm.DB {
 	return d.db.Delete(dest)
 }
 
-func (d *seapDataCenter) getByIdWithCondition(dest any, username string, model any, preloads ...string) *gorm.DB {
+func (d *seapDataCenter) GetByIdWithCondition(dest any, username string, model any, preloads ...string) *gorm.DB {
 	preloadedDb := d.db
 
 	preloadedDb = preloadedDb.Preload("DutiesWithSubmission", "username = (?)", username).Preload("DutiesWithSubmission.Duty_")
@@ -115,11 +123,11 @@ func (d *seapDataCenter) getByIdWithCondition(dest any, username string, model a
 	return preloadedDb.Model(model).Where(dest).First(dest)
 }
 
-func (d *seapDataCenter) getOneByStructCondition(dest any, condition any) *gorm.DB {
+func (d *seapDataCenter) GetOneByStructCondition(dest any, condition any) *gorm.DB {
 	return d.db.Where(condition).First(dest)
 }
 
-func (d *seapDataCenter) getAllByStructCondition(dest any, condition any, model any) *gorm.DB {
+func (d *seapDataCenter) GetAllByStructCondition(dest any, condition any, model any) *gorm.DB {
 	//preloadedDb := d.db
 	//for _, s := range preloads {
 	//	preloadedDb = preloadedDb.Preload(s)
@@ -127,6 +135,6 @@ func (d *seapDataCenter) getAllByStructCondition(dest any, condition any, model 
 	return d.db.Model(model).Where(condition).Find(dest)
 }
 
-func (d *seapDataCenter) updateModelByMap(fields map[string]any, model any) *gorm.DB {
+func (d *seapDataCenter) UpdateModelByMap(fields map[string]any, model any) *gorm.DB {
 	return d.db.Model(model).Updates(fields)
 }

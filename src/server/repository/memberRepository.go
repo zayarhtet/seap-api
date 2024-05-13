@@ -18,24 +18,24 @@ type MemberRepositoryImpl struct{}
 
 func (m MemberRepositoryImpl) GetAllMembers(offset, limit int) *[]dao.Member {
 	var members []dao.Member
-	dc.getAllByPagination(&members, offset, limit, &dao.Member{}, "Role")
+	dc.GetAllByPagination(&members, offset, limit, &dao.Member{}, "Role")
 	return &members
 }
 
 func (m MemberRepositoryImpl) GetAllMembersWithFamilies(offset, limit int) *[]dao.MemberWithFamilies {
 	var members []dao.MemberWithFamilies
-	dc.getAllByPagination(&members, offset, limit, &dao.Member{}, "Families.Family", "Families.MemberRole", "Families")
+	dc.GetAllByPagination(&members, offset, limit, &dao.Member{}, "Families.Family", "Families.MemberRole", "Families")
 	return &members
 }
 
 func (m MemberRepositoryImpl) GetRowCount() *int64 {
 	var count int64
-	dc.getRowCount("member", &count)
+	dc.GetRowCount("member", &count)
 	return &count
 }
 
 func (m MemberRepositoryImpl) SaveMember(member *dao.Member) (*dao.Member, error) {
-	err := dc.insertOne(member).Error
+	err := dc.InsertOne(member).Error
 
 	if err != nil {
 		return nil, err
@@ -48,16 +48,16 @@ func (m MemberRepositoryImpl) SaveMember(member *dao.Member) (*dao.Member, error
 }
 
 func (m MemberRepositoryImpl) GetMemberByUsername(member *dao.Member) error {
-	return dc.getById(member, &dao.Member{}, "Role").Error
+	return dc.GetById(member, &dao.Member{}, "Role").Error
 }
 
 func (m MemberRepositoryImpl) DeleteMember(member *dao.Member) (string, error) {
-	err := dc.getById(member, &dao.Member{}).Error
+	err := dc.GetById(member, &dao.Member{}).Error
 	if err != nil {
 		return "", err
 	}
 	credentialId := member.CredentialId
-	err = dc.deleteOneById(member).Error
+	err = dc.DeleteOneById(member).Error
 	if err != nil {
 		return "", err
 	}
@@ -65,5 +65,5 @@ func (m MemberRepositoryImpl) DeleteMember(member *dao.Member) (string, error) {
 }
 
 func (m MemberRepositoryImpl) UpdateMember(updatedMap map[string]any, member *dao.Member) error {
-	return dc.updateModelByMap(updatedMap, member).Error
+	return dc.UpdateModelByMap(updatedMap, member).Error
 }

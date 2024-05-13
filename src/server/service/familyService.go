@@ -274,3 +274,7 @@ func (fs familyServiceImpl) DeleteFamilyResponse(famId string) (dto.Response, er
 func NewFamilyService() FamilyService {
 	return &familyServiceImpl{fr: repository.FamilyRepositoryImpl{}, dr: repository.DutyRepositoryImpl{}}
 }
+
+func NewFamilyServiceForTest(fr repository.FamilyRepository, dr repository.DutyRepository) FamilyService {
+	return &familyServiceImpl{fr: fr, dr: dr}
+}

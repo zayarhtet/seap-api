@@ -8,12 +8,10 @@ type MockMemberService struct {
 }
 
 func (m *MockMemberService) SignUp(request dto.SignUpRequest) (dto.Response, error) {
-	//TODO implement me
 	panic("implement me")
 }
 
 func (m *MockMemberService) Login(request dto.LoginRequest) (dto.Response, error) {
-	//TODO implement me
 	panic("implement me")
 }
 
@@ -22,7 +20,6 @@ func (m *MockMemberService) GetAllMembersResponse(i int, i2 int) (dto.Response, 
 }
 
 func (m *MockMemberService) GetAllMembersWithFamiliesResponse(i int, i2 int) (dto.Response, error) {
-	//TODO implement me
 	panic("implement me")
 }
 
@@ -31,7 +28,6 @@ func (m *MockMemberService) GetMemberByIdResponse(s string) (dto.Response, error
 }
 
 func (m *MockMemberService) DeleteMemberResponse(s string) (dto.Response, error) {
-	//TODO implement me
 	panic("implement me")
 }
 

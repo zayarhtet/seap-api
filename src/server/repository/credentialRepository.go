@@ -13,14 +13,14 @@ type CredentialRepository interface {
 type CredentialRepositoryImpl struct{}
 
 func (cr CredentialRepositoryImpl) SaveCredential(credential *dao.Credential) (string, error) {
-	dr := dc.insertOne(credential)
+	dr := dc.InsertOne(credential)
 	return credential.CredentialId, dr.Error
 }
 
 func (cr CredentialRepositoryImpl) DeleteCredential(id string) error {
-	return dc.deleteOneById(&dao.Credential{CredentialId: id}).Error
+	return dc.DeleteOneById(&dao.Credential{CredentialId: id}).Error
 }
 
 func (cr CredentialRepositoryImpl) GetCredentialById(credential *dao.Credential) error {
-	return dc.getById(credential, &dao.Credential{}).Error
+	return dc.GetById(credential, &dao.Credential{}).Error
 }

@@ -166,3 +166,7 @@ func (ms memberServiceImpl) DeleteMemberResponse(username string) (dto.Response,
 func NewMemberService() MemberService {
 	return &memberServiceImpl{mr: repository.MemberRepositoryImpl{}, cr: repository.CredentialRepositoryImpl{}}
 }
+
+func NewMemberServiceForTest(mr repository.MemberRepository, cr repository.CredentialRepository) MemberService {
+	return &memberServiceImpl{mr: mr, cr: cr}
+}
