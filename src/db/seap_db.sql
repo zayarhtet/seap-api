@@ -395,11 +395,18 @@ ALTER TABLE duty
 RENAME COLUMN multipleSubmission TO multiple_submission;
 
 use seap_db;
+show tables;
 select * from grading;
 select * from family_member;
+describe family_member;
 select * from member;
 select * from family;
 select * from duty;
+select * from member;
+alter table duty add column plugin_name varchar(255);
+
+update duty set plugin_name="fpclean" where plugin_name = null;
+
 select * from credential where credential_id = "47186c71-d626-4ccf-aa68-db183464f661";
 show tables; describe given_file; describe submitted_file;
 describe grading;
@@ -424,3 +431,4 @@ member (member_id, file_id);
 alter table grading rename column hasGraded to has_graded;
 
 DELETE FROM `duty` WHERE `duty`.`duty_id` = 'ff1bff55-f8cc-4316-b046-7f6d2d05f68f';
+select * from credential where credential_id = "f72d1529-327c-4f2d-8fe1-6bf777b7fd25";

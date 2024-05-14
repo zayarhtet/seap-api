@@ -14,8 +14,8 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema seap_db
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `seap_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE `seap_db` ;
+CREATE SCHEMA IF NOT EXISTS `seap_db_test` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `seap_db_test` ;
 
 -- -----------------------------------------------------
 -- Table `seap_db`.`credential`
@@ -222,3 +222,17 @@ COLLATE = utf8mb4_0900_ai_ci;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+insert into role(role_id,name) values(99, "admin");
+insert into role(role_id, name) values(1, "tutor");
+insert into role(role_id, name) values(2, "tutee");
+
+insert into credential (credential_id, password) values ("e0f5a784-aa4b-4523-a3bd-b4c01a6ca7e6", "$2a$10$2y5U2e1P7pr8CrVjjMNOtOmcrB25e4JLZMDf.S5KwzFVbcFs8Wt3G");
+insert into member (first_name, last_name, username, email, credential_id, role_id) values ("Admin", "Admin", "admin", "admin@seap.org", "e0f5a784-aa4b-4523-a3bd-b4c01a6ca7e6", 99);
+
+insert into credential (credential_id, password) values ("91164b58-2eba-4a81-ba0c-dae18be822e0", "$2a$10$omsB.jQKURmZ8g3v7imIWOGhaOjiW4tt.9j2oSJTL7xtV9jEBiz9.");
+insert into member (first_name, last_name, username, email, credential_id, role_id) values ("John", "Doe", "johndoe", "johndoe@seap.org", "f72d1529-327c-4f2d-8fe1-6bf777b7fd25", 1);
+
+insert into credential (credential_id, password) values ("f72d1529-327c-4f2d-8fe1-6bf777b7fd25", "$2a$10$7L5D5yIUOkpbWyi90NL6rePzMhU3YhS.s5MfYJje1NqLokIy7PxVS");
+insert into member (first_name, last_name, username, email, credential_id, role_id) values ("Jane", "Doe", "janedoe", "janedoe@seap.org", "91164b58-2eba-4a81-ba0c-dae18be822e0", 2);
