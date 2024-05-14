@@ -36,56 +36,43 @@ func TestGetFamilyByIdWithDuties_Tutor_Success(t *testing.T) {
 		Err:              nil,
 	}
 
-	// Initialize family service with mock repository and service
 	fs := service.NewFamilyServiceForTest(mockFamilyRepo, nil)
 
-	// Call the function being tested
 	familyId := "mockFamilyId"
 	username := "mockUsername"
 	response, err := fs.GetFamilyByIdWithDuties(familyId, username)
 
-	// Assertions
-	assert.Nil(t, err)         // No error expected
-	assert.NotNil(t, response) // Response should not be nil
-	// Add more assertions to verify the response contents
+	assert.Nil(t, err)
+	assert.NotNil(t, response)
 }
 
 func TestRoleInFamily_Success(t *testing.T) {
-	// Initialize mock family repository
 	mockFamilyRepo := &repository.MockFamilyRepository{
 		RoleDB: "tutor",
 		Err:    nil,
 	}
 
-	// Initialize family service with mock repository
 	fs := service.NewFamilyServiceForTest(mockFamilyRepo, nil)
 
-	// Call the function being tested
 	username := "mockUsername"
 	familyId := "mockFamilyId"
 	role, err := fs.RoleInFamily(username, familyId)
 
-	// Assertions
-	assert.Nil(t, err)     // No error expected
-	assert.NotNil(t, role) // Role should not be nil
-	// Add more assertions to verify the role value
+	assert.Nil(t, err)
+	assert.NotNil(t, role)
 }
 
 func TestRoleInFamily_Error(t *testing.T) {
-	// Initialize mock family repository with error
 	mockFamilyRepo := &repository.MockFamilyRepository{
 		Err: errors.New("error message"),
 	}
 
-	// Initialize family service with mock repository
 	fs := service.NewFamilyServiceForTest(mockFamilyRepo, nil)
 
-	// Call the function being tested
 	username := "mockUsername"
 	familyId := "mockFamilyId"
 	role, err := fs.RoleInFamily(username, familyId)
 
-	// Assertions
-	assert.NotNil(t, err) // Error expected
-	assert.Empty(t, role) // Role should be empty
+	assert.NotNil(t, err)
+	assert.Empty(t, role)
 }
