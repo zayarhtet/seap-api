@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `seap_db`.`duty` (
   `point_system` TINYINT(1) NULL DEFAULT '1',
   `possible_points` DOUBLE NULL DEFAULT NULL,
   `multiple_submission` TINYINT(1) NULL DEFAULT '1',
+  `plugin_name` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`duty_id`),
   INDEX `FK_duty_family` (`family_id` ASC) VISIBLE,
   CONSTRAINT `FK_duty_family`
