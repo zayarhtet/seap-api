@@ -23,6 +23,5 @@ func (m *MockCredentialRepository) SaveCredential(credential *dao.Credential) (s
 
 // DeleteCredential mocks the DeleteCredential method of CredentialRepository
 func (m *MockCredentialRepository) DeleteCredential(credentialId string) error {
-	// Implement mock behavior as needed
 	return nil
 }

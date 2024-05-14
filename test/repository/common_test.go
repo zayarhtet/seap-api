@@ -54,3 +54,17 @@ func TestGetMemberWithDutiesByUsername(t *testing.T) {
 
 	assert.NoError(t, err)
 }
+
+func TestGetFamilyByIdWithDutiesForTutee_Success(t *testing.T) {
+	mockDataCenter := &database.MockDataCenter{}
+
+	repository.InitializeDataCenter(mockDataCenter)
+
+	familyRepo := repository.FamilyRepositoryImpl{}
+
+	family := &dao.FamilyWithDuties{}
+
+	err := familyRepo.GetFamilyByIdWithDutiesForTutee(family, "username")
+
+	assert.NoError(t, err, "GetFamilyByIdWithDutiesForTutee() error")
+}

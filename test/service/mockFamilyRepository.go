@@ -30,7 +30,7 @@ func (m *MockFamilyRepository) GetMemberByIdWithFamilies(families *dao.MemberWit
 
 func (m *MockFamilyRepository) GetFamilyById(members *dao.FamilyWithMembers) error {
 	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (m *MockFamilyRepository) GetFamilyOnlyById(family *dao.Family) error {

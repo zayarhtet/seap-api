@@ -118,15 +118,12 @@ func TestSaveGivenFiles_Success(t *testing.T) {
 }
 
 func TestSaveGivenFiles_CreateGivenFilesError(t *testing.T) {
-	// Mock DutyService with error for CreateGivenFiles
 	mockService := &service.MockDutyService{
 		GivenFileErr: errors.New("failed to create given files"),
 	}
 
-	// Create controller with mock service
 	cc := controller.NewCDNController(nil, mockService)
 
-	// Create a mock Gin context
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = append(c.Params, gin.Param{Key: "dutyId", Value: "1"})
@@ -163,26 +160,20 @@ func TestSaveGivenFiles_CreateGivenFilesError(t *testing.T) {
 
 	c.Request = req
 
-	// Call the function being tested
 	cc.SaveGivenFiles(c)
 
-	// Assert HTTP status code
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
-	// Assert response body
 	assert.JSONEq(t, `{"error": "Failed to create assignment and upload files"}`, w.Body.String())
 }
 
 func TestSaveGivenFiles_SaveInputFilesError(t *testing.T) {
-	// Mock DutyService with error for SaveInputFiles
 	mockService := &service.MockDutyService{
 		InputFileErr: errors.New("failed to save input files"),
 	}
 
-	// Create controller with mock service
 	cc := controller.NewCDNController(nil, mockService)
 
-	// Create a mock Gin context
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = append(c.Params, gin.Param{Key: "dutyId", Value: "1"})
@@ -219,12 +210,9 @@ func TestSaveGivenFiles_SaveInputFilesError(t *testing.T) {
 
 	c.Request = req
 
-	// Call the function being tested
 	cc.SaveGivenFiles(c)
 
-	// Assert HTTP status code
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
-	// Assert response body
 	assert.JSONEq(t, `{"error": "Failed to create assignment and upload files"}`, w.Body.String())
 }

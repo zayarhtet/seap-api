@@ -3,12 +3,11 @@ package controller
 import "github.com/zayarhtet/seap-api/src/server/model/dto"
 
 type MockEngineService struct {
-	Data any   // Predefined data to return
-	Err  error // Predefined error to return
+	Data any
+	Err  error
 }
 
 func (m *MockEngineService) GetPluginListResponse() (dto.Response, error) {
-	//TODO implement me
 	panic("implement me")
 }
 

@@ -415,3 +415,7 @@ func (ds dutyServiceImpl) SaveInputFiles(headers []*multipart.FileHeader, dutyId
 func NewDutyService() DutyService {
 	return &dutyServiceImpl{dr: repository.DutyRepositoryImpl{}, fr: repository.FamilyRepositoryImpl{}}
 }
+
+func NewDutyServiceForTest(dr repository.DutyRepository, fr repository.FamilyRepository) DutyService {
+	return &dutyServiceImpl{dr: dr, fr: fr}
+}

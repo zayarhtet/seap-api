@@ -8,7 +8,6 @@ import (
 	"github.com/zayarhtet/seap-api/src/server/service"
 	repository "github.com/zayarhtet/seap-api/test/service"
 
-	// Import necessary packages for testing
 	"github.com/stretchr/testify/assert"
 )
 

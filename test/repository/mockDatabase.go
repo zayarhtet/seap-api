@@ -49,8 +49,7 @@ func (m *MockDataCenter) GetAllByPaginationWithCondition(a any, i int, i2 int, a
 }
 
 func (m *MockDataCenter) GetByIdWithCondition(a any, s string, a2 any, s2 ...string) *gorm.DB {
-	//TODO implement me
-	panic("implement me")
+	return &gorm.DB{Error: nil}
 }
 
 func (m *MockDataCenter) GetOneByStructCondition(a any, a2 any) *gorm.DB {
