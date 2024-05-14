@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"plugin"
+	"runtime"
 	"sync"
 
 	"github.com/zayarhtet/seap-api/src/plugins/lib"
@@ -35,7 +36,15 @@ func DiscoverAndRegisterPlugins(directory string) error {
 			continue
 		}
 
-		pluginBinary := filepath.Join(directory, entry.Name(), entry.Name()+".so")
+		os := runtime.GOOS
+		var ext string
+		if os == "windows" {
+			ext = ".dll"
+		} else {
+			ext = ".so"
+		}
+
+		pluginBinary := filepath.Join(directory, entry.Name(), entry.Name()+ext)
 
 		cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", pluginBinary, pluginGo)
 
